@@ -27,6 +27,7 @@ function setupEvents() {
   document.getElementById("upload-btn").addEventListener("click", () =>
     document.getElementById("file-input").click()
   );
+  document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
   document.getElementById("file-input").addEventListener("change", handleUpload);
   document.getElementById("mock-btn")?.addEventListener("click", playMock);
   document.getElementById("stop-btn")?.addEventListener("click", stopSpeech);
@@ -48,6 +49,11 @@ async function toggleMic() {
   }
 }
 
+function testVoice() {
+  const msg = "Hello, I am Lexi.";
+  speak(msg);
+  addChat(msg, "ai");
+}
 function takeSnapshot() {
   const video = document.getElementById("video");
   const canvas = document.createElement("canvas");
@@ -108,3 +114,33 @@ function decreaseFont() {
   let size = parseFloat(window.getComputedStyle(el).fontSize);
   if (size > 16) el.style.fontSize = size - 2 + "px";
 }
+
+// ===== Mock Highlight =====
+let mockWords = ["This","is","a","mock","text","for","highlighting","test"];
+let currentWord = 0;
+
+function renderMockText() {
+  const container = document.getElementById("reading-text");
+  container.innerHTML = "";
+
+  mockWords.forEach((word, index) => {
+    const span = document.createElement("span");
+    span.textContent = word + " ";
+    span.dataset.index = index;
+    container.appendChild(span);
+  });
+}
+
+function highlightLoop() {
+  const spans = document.querySelectorAll("#reading-text span");
+  spans.forEach(s => s.classList.remove("active-word"));
+
+  if (spans[currentWord]) {
+    spans[currentWord].classList.add("active-word");
+  }
+
+  currentWord = (currentWord + 1) % spans.length;
+}
+
+renderMockText();
+setInterval(highlightLoop, 800);
