@@ -14,6 +14,8 @@ body {
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
+
+  overflow: hidden;   /* ✅ 新增 */
 }
 
 /* ===== Camera Card ===== */
@@ -78,6 +80,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  min-height: 0;   /* ✅ 关键修复 */
 }
 
 /* Panel Titles */
@@ -112,6 +116,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+    min-height: 0;   /* ✅ 关键修复 */
+
 }
 
 /* Chat Messages with tail */
