@@ -20,44 +20,47 @@
 
 <div id="app">
 
-  <!-- CAMERA -->
-  <div class="camera-container">
-    <video id="video" autoplay playsinline></video>
+  <!-- ===== Main Layout ===== -->
+  <div class="main-layout">
+
+    <!-- ===== Left: Camera ===== -->
+    <div class="camera-container">
+      <video id="video" autoplay playsinline></video>
+    </div>
+
+    <!-- ===== Right Panel ===== -->
+    <div class="right-panel">
+
+      <!-- Text Display -->
+      <div class="text-display" id="text-display">
+        <p id="reading-text">
+          This is where detected text will appear. It can be read aloud with word highlighting.
+        </p>
+      </div>
+
+      <!-- Chat History -->
+      <div class="chat-history" id="chat-history">
+        <div class="chat-message ai">AI: Hello, I am Lexi.</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="explain-btn">Explain Simply</button>
+        <button id="stop-btn">Stop Reading</button>
+      </div>
+
+    </div>
   </div>
 
-  <!-- TOOLBAR -->
-  <div class="toolbar">
+  <!-- ===== Bottom Control Bar ===== -->
+  <div class="control-bar">
     <button id="mic-btn">🎙 Mic</button>
     <button id="snapshot-btn">📸 Snapshot</button>
     <button id="upload-btn">📄 Upload</button>
-    <button id="mock-btn" class="mock">🧪 Mock</button>
+    <button id="mock-btn" class="mock-btn">🧪 Mock</button>
   </div>
-
-  <!-- TEXT DISPLAY -->
-  <div id="text-display">
-    <div id="document-text">
-      Point camera or upload a document to begin reading.
-    </div>
-  </div>
-
-  <!-- CHAT AREA -->
-  <div id="chat-area"></div>
-
-  <!-- CONTROL BUTTONS -->
-  <div class="controls">
-    <button id="explain-btn">Explain Simply</button>
-    <button id="stop-btn">Stop Reading</button>
-
-    <div class="font-controls">
-      <button id="font-decrease">A−</button>
-      <button id="font-increase">A+</button>
-    </div>
-  </div>
-
-  <input type="file" id="file-input" accept=".pdf,image/*" hidden>
 
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
