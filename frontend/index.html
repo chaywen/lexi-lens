@@ -1,57 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ws: wss:;">
-  <title>LexiLens Phase 1 Demo</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>LexiLens — Phase 1</title>
+
+<!-- CSP -->
+<meta http-equiv="Content-Security-Policy"
+content="
+default-src 'self';
+connect-src 'self' ws: wss:;
+media-src 'self' blob:;
+img-src 'self' blob: data:;
+script-src 'self';
+style-src 'self' 'unsafe-inline';
+">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #FAFAFA;
+  color: #1A1A1A;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  padding: 20px;
+  font-size: 24px;
+  background: #7B2D8B;
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: row; /* 左右布局 */
+  padding: 20px;
+  gap: 20px;
+}
+
+/* 左边功能区 */
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 右边上传区 */
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+video {
+  width: 320px;
+  border-radius: 12px;
+}
+
+button {
+  height: 40px;
+  padding: 0 15px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary {
+  background: #117A65;
+  color: white;
+}
+
+.modeBtn {
+  background: #7B2D8B;
+  color: white;
+}
+
+</style>
 </head>
+
 <body>
-  <!-- Mode Selector Overlay -->
-  <div id="mode-selector-overlay" class="mode-selector-overlay">
-    <div class="mode-selector-content">
-      <h2>Choose a Mode</h2>
-      <div class="mode-buttons">
-        <button class="mode-btn" data-mode="book">📖 Book Reading</button>
-        <button class="mode-btn" data-mode="form">📋 Form Filling</button>
-        <button class="mode-btn" data-mode="study">🎓 Study Mode</button>
-        <button class="mode-btn" data-mode="write">✍️ Writing</button>
-      </div>
+
+<header>LexiLens — Phase 1</header>
+
+<div class="container">
+  <!-- 左边功能区 -->
+  <div class="left">
+    <video id="camera" autoplay playsinline></video>
+
+    <button id="startBtn" class="primary">Start Session</button>
+    
+    <div>
+      <p>Choose Mode:</p>
+      <button class="modeBtn" data-mode="A">Mode A</button>
+      <button class="modeBtn" data-mode="B">Mode B</button>
+      <button class="modeBtn" data-mode="C">Mode C</button>
+      <button class="modeBtn" data-mode="D">Mode D</button>
     </div>
+
+    <button id="mockBtn">Play Mock Response</button>
   </div>
 
-  <!-- Main App -->
-  <div id="app">
-    <!-- Camera Panel -->
-    <div class="camera-panel">
-      <video id="video" playsinline autoplay></video>
-      <div class="floating-bar">
-        <button id="mic-btn">🎤 Mic</button>
-        <div class="subtitle-area" id="subtitle-area">Listening...</div>
-        <div class="voice-visualizer" id="visualizer">
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-        </div>
-        <button id="mode-switch-btn">⚙️ Mode</button>
-        <button id="snapshot-btn">📸 Snapshot</button>
-      </div>
-    </div>
-
-    <!-- Document Panel -->
-    <div class="document-panel">
-      <h3>Documents & Transcription</h3>
-      <div id="drop-zone">
-        <div>📄 Drag & drop PDF or image here</div>
-        <div style="font-size: 14px; color: #666;">or click to browse</div>
-      </div>
-      <input type="file" id="file-input" accept=".pdf,image/*">
-    </div>
+  <!-- 右边上传区 -->
+  <div class="right">
+    <p>Upload File:</p>
+    <input type="file" id="fileInput">
   </div>
+</div>
 
-  <script src="script.js"></script>
+<script>
+const CONFIG = {
+  WS_URL: "ws://localhost:8080/ws/session",
+  API_URL: "http://localhost:8080"
+};
+
+let stream;
+
+// 摄像头 + 麦克风
+document.getElementById("startBtn").addEventListener("click", async () => {
+  await startCamera();
+  await startMic();
+});
+
+// mock 假回应
+document.getElementById("mockBtn").addEventListener("click", () => {
+  mockResponse("Hello! I am Lexi.");
+});
+
+// mode 按钮点击也能播不同声音（模拟模式不同效果）
+document.querySelectorAll(".modeBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.mode;
+    mockResponse(`You selected Mode ${mode}`);
+  });
+});
+
+async function startCamera() {
+  stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  document.getElementById("camera").srcObject = stream;
+}
+
+async function startMic() {
+  const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const recorder = new MediaRecorder(audioStream);
+  recorder.ondataavailable = (e) => {
+    console.log("Audio chunk captured", e.data);
+  };
+  recorder.start(500);
+}
+
+function mockResponse(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+}
+</script>
+
 </body>
 </html>
