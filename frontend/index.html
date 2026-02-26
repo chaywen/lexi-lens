@@ -55,6 +55,7 @@ body { margin:0;font-family:'Inter',sans-serif;background:#f4f6f8;color:#1f2933;
     <div class="control-bar">
       <button id="explain-btn" class="btn-outline">Explain Simply</button>
       <button id="stop-btn" class="btn-outline">Stop Reading</button>
+      <button id="test-voice-btn" class="btn-outline">🔊 Test Voice</button>
       <button id="font-increase" class="btn-outline">A+</button>
       <button id="font-decrease" class="btn-outline">A-</button>
     </div>
@@ -69,14 +70,11 @@ body { margin:0;font-family:'Inter',sans-serif;background:#f4f6f8;color:#1f2933;
 let wsMock = {
   send: (msg) => {
     console.log("Mock WS send:", msg);
-    // 模拟服务器响应：高亮第一条文字
+    // 模拟服务器响应高亮
     setTimeout(() => {
       const data = JSON.parse(msg);
-      if(data.type === "snapshot") {
-        addChat("Server: Snapshot received.", "ai");
-      } else if(data.type === "upload") {
-        addChat(`Server: File "${data.name}" processed.`, "ai");
-      }
+      if(data.type === "snapshot") addChat("Server: Snapshot received.", "ai");
+      else if(data.type === "upload") addChat(`Server: File "${data.name}" processed.`, "ai");
     },500);
   }
 };
@@ -105,10 +103,7 @@ document.getElementById("snapshot-btn").addEventListener("click", () => {
 // =====================
 // File Upload
 // =====================
-document.getElementById("upload-btn").addEventListener("click", () => {
-  document.getElementById("file-input").click();
-});
-
+document.getElementById("upload-btn").addEventListener("click", () => document.getElementById("file-input").click());
 document.getElementById("file-input").addEventListener("change", (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -176,15 +171,22 @@ document.getElementById("font-decrease").addEventListener("click", () => {
 // =====================
 document.getElementById("explain-btn").addEventListener("click", () => addChat("Explain Simply clicked", "user"));
 document.getElementById("stop-btn").addEventListener("click", () => addChat("Stop Reading clicked", "user"));
+document.getElementById("test-voice-btn").addEventListener("click", ()=>{
+  const msg = "Hello, I am Lexi.";
+  const utter = new SpeechSynthesisUtterance(msg);
+  utter.rate = 0.9;
+  speechSynthesis.speak(utter);
+  addChat(msg, "ai");
+});
 
 // =====================
-// Mock Highlighter for testing
+// Mock Highlighter
 // =====================
 let mockWords = ["This","is","a","mock","text","for","highlighting","test","phase","2"];
 function renderMockText() {
   const container = document.getElementById("reading-text");
   container.innerHTML = "";
-  mockWords.forEach((w,i) => {
+  mockWords.forEach((w,i)=>{
     const span = document.createElement("span");
     span.innerText = w + " ";
     span.dataset.wordIndex = i;
@@ -194,7 +196,7 @@ function renderMockText() {
 renderMockText();
 
 let currentWord = 0;
-setInterval(() => {
+setInterval(()=>{
   document.querySelectorAll("#reading-text span").forEach(s=>s.classList.remove("active-word"));
   const span = document.querySelector(`#reading-text span[data-word-index='${currentWord}']`);
   if(span) span.classList.add("active-word");
