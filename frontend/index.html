@@ -1,191 +1,296 @@
+@@ -1,71 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LexiLens Phase2 Mock</title>
-  <style>
-    /* ===== Inline CSS ===== */
-    body {margin:0;font-family:Arial,sans-serif;background:#FAFAFA;color:#1A1A1A;}
-    .main-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;padding:20px;height:100vh;box-sizing:border-box;}
-    .camera-card{position:relative;display:flex;justify-content:center;align-items:center;}
-    .camera-inner{background:rgba(0,0,0,0.55);border-radius:24px;padding:12px;width:100%;height:100%;display:flex;justify-content:center;align-items:center;position:relative;box-shadow:0 12px 36px rgba(0,0,0,0.3);}
-    #video{width:100%;height:100%;object-fit:cover;border-radius:20px;}
-    .camera-overlay{position:absolute;bottom:15px;left:15px;display:flex;gap:10px;}
-    .btn{padding:10px 14px;border-radius:16px;border:none;font-size:14px;cursor:pointer;background:#5b4fff;color:#fff;transition:0.2s;}
-    .btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.3);}
-    .mic-btn{background:#8b5cf6;}
-    .right-panel{display:flex;flex-direction:column;gap:20px;}
-    .panel-title{font-weight:bold;font-size:16px;margin-bottom:8px;}
-    .text-display{background:#fff7e6;border-radius:16px;padding:20px;font-size:18px;line-height:1.8;box-shadow:0 8px 24px rgba(0,0,0,0.08);flex:1;display:flex;flex-direction:column;overflow-y:auto;}
-    .chat-history{background:#ffffff;border-radius:16px;padding:15px;flex:1;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:8px;}
-    .chat-message{position:relative;margin-bottom:10px;padding:12px 16px;border-radius:16px;max-width:75%;word-wrap:break-word;font-size:14px;}
-    .chat-message.ai{background:#d8b4fe;color:#1f2933;align-self:flex-start;}
-    .chat-message.ai::after{content:'';position:absolute;left:-8px;top:12px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:8px solid #d8b4fe;}
-    .chat-message.user{background:#4b5563;color:#f9fafb;align-self:flex-end;}
-    .chat-message.user::after{content:'';position:absolute;right:-8px;top:12px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:8px solid #4b5563;}
-    .control-bar{display:flex;gap:10px;}
-    .btn-outline{padding:8px 12px;border-radius:12px;border:1px solid #cbd5e1;background:#f9fafb;color:#1f2933;cursor:pointer;font-size:14px;transition:0.2s;}
-    .btn-outline:hover{background:#f3f4f6;}
-    .active-word{background:#F9E79F;border-radius:3px;transition:0.15s;}
-  </style>
+  <title>LexiLens UI</title>
+
+  <!-- 🔐 CSP Security -->
+  <meta http-equiv="Content-Security-Policy"
+        content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        img-src 'self' data:;
+        media-src 'self' blob: data:;
+        connect-src 'self' ws://localhost:8080;
+        ">
+
+  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 简化 CSP 允许 inline -->
+<meta http-equiv="Content-Security-Policy"
+content="default-src 'self' blob: data:; 
+script-src 'self' 'unsafe-inline'; 
+style-src 'self' 'unsafe-inline';">
+
+<title>LexiLens Phase 1</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f4f6f8;
+  color: #1f2933;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.camera-inner {
+  background: rgba(0,0,0,0.6);
+  border-radius: 24px;
+  padding: 12px;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.camera-overlay {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  background: #5b4fff;
+  color: white;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.text-display {
+  background: #fff7e6;
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 18px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-history {
+  background: white;
+  border-radius: 16px;
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-message {
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  max-width: 70%;
+}
+
+.chat-message.ai {
+  background: #d8b4fe;
+}
+
+.chat-message.user {
+  background: #4b5563;
+  color: white;
+  margin-left: auto;
+}
+
+.control-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
   <div id="app">
     <div class="main-layout">
+
+      <!-- Camera Card -->
       <div class="camera-card">
         <div class="camera-inner">
-          <video id="video" autoplay muted></video>
+          <video id="video" autoplay muted playsinline></video>
+
           <div class="camera-overlay">
             <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
             <button id="snapshot-btn" class="btn">📸 Snapshot</button>
             <button id="upload-btn" class="btn">📄 Upload</button>
-            <input type="file" id="file-input" style="display:none" multiple>
-            <button id="mock-btn" class="btn">🤖 Mock Lexi</button>
+            <input type="file" id="file-input" hidden>
           </div>
         </div>
       </div>
+
+      <!-- Right Panel -->
       <div class="right-panel">
+
         <div class="text-display">
           <div class="panel-title">Text Display Area</div>
-          <div id="reading-text"><p>The recognized text will appear here.</p></div>
+          <div id="reading-text">
+            <p>The recognized text will appear here.</p>
+          </div>
         </div>
+
         <div class="chat-history">
           <div class="panel-title">Chat Log Area</div>
           <div id="chat-history">
-            <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
+            <div class="chat-message ai">
+              Lexi: Hello! I am ready to read for you.
+            </div>
           </div>
         </div>
+
         <div class="control-bar">
           <button id="explain-btn" class="btn-outline">Explain Simply</button>
           <button id="stop-btn" class="btn-outline">Stop Reading</button>
           <button id="font-increase" class="btn-outline">A+</button>
           <button id="font-decrease" class="btn-outline">A-</button>
         </div>
+
       </div>
+
+<div class="main-layout">
+
+  <!-- Camera -->
+  <div class="camera-inner">
+    <video id="video" autoplay muted></video>
+    <div class="camera-overlay">
+      <button class="btn" onclick="toggleMic()">🎙 Mic</button>
+      <button class="btn" onclick="speakHello()">🔊 Test Voice</button>
     </div>
   </div>
 
-  <script>
-    // ===== Inline JS =====
-    const CONFIG = { WS_URL:"ws://localhost:8080/ws/session", API_URL:"http://localhost:8080" };
-    const SESSION_TOKEN = crypto.randomUUID();
-    const ALLOWED_TYPES = ['application/pdf','image/png','image/jpeg','image/webp'];
-    const MAX_SIZE = 10*1024*1024;
+  <!-- Right Panel -->
+  <div class="right-panel">
 
-    let isRecording=false, mediaRecorder=null, videoStream=null;
-    let ws = { send: (msg)=>console.log('Mock WS send:', msg) }; // mock ws
-    let currentWord=0, words=[];
+    <div class="text-display" id="reading-text">
+      Speak and your words will appear here...
+    </div>
 
-    window.addEventListener("DOMContentLoaded",()=>{
-      initCamera();
-      setupEvents();
-    });
+    <div class="chat-history" id="chat-history">
+      <div class="chat-message ai">Lexi: Hello! I am ready.</div>
+    </div>
 
-    async function initCamera(){
-      try{
-        videoStream=await navigator.mediaDevices.getUserMedia({video:true});
-        document.getElementById("video").srcObject=videoStream;
-      }catch(err){console.error("Camera error:",err);}
+    <div class="control-bar">
+      <button class="btn-outline" onclick="increaseFont()">A+</button>
+      <button class="btn-outline" onclick="decreaseFont()">A-</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let recognition;
+let isRecording = false;
+
+// 摄像头
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    document.getElementById("video").srcObject = stream;
+  });
+
+// 初始化语音识别
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Speech Recognition not supported. Use Chrome.");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = function(event) {
+    let transcript = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
     }
+    document.getElementById("reading-text").innerText = transcript;
+  };
+}
 
-    function setupEvents(){
-      document.getElementById("mic-btn").addEventListener("click", toggleMic);
-      document.getElementById("snapshot-btn").addEventListener("click", takeSnapshot);
-      document.getElementById("upload-btn").addEventListener("click", ()=>document.getElementById("file-input").click());
-      document.getElementById("file-input").addEventListener("change", handleUpload);
-      document.getElementById("mock-btn").addEventListener("click", playMock);
-      document.getElementById("stop-btn").addEventListener("click", stopSpeech);
-      document.getElementById("explain-btn").addEventListener("click", explainSimply);
-      document.getElementById("font-increase").addEventListener("click", increaseFont);
-      document.getElementById("font-decrease").addEventListener("click", decreaseFont);
-    }
+initSpeechRecognition();
 
-    function sendMessage(type,payload={}){
-      ws.send(JSON.stringify({type,session_token:SESSION_TOKEN,...payload}));
-    }
+// Mic 按钮
+function toggleMic() {
+  if (!isRecording) {
+    recognition.start();
+    isRecording = true;
+    addChat("Listening...", "user");
+  } else {
+    recognition.stop();
+    isRecording = false;
+  }
+}
 
-    async function toggleMic(){
-      if(!isRecording){
-        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-        mediaRecorder=new MediaRecorder(stream);
-        mediaRecorder.start();
-        isRecording=true;
-        addChat("Listening...","user");
-      }else{
-        mediaRecorder.stop();
-        isRecording=false;
-      }
-    }
+// 测试语音按钮
+function speakHello() {
+  const msg = "Hello, I am Lexi.";
+  const utter = new SpeechSynthesisUtterance(msg);
+  utter.rate = 0.9;
+  speechSynthesis.speak(utter);
+  addChat(msg, "ai");
+}
 
-    function takeSnapshot(){
-      const video=document.getElementById("video");
-      const canvas=document.createElement("canvas");
-      canvas.width=video.videoWidth;
-      canvas.height=video.videoHeight;
-      canvas.getContext("2d").drawImage(video,0,0);
-      addChat("Snapshot captured.","ai");
-      sendMessage('snapshot',{frame:canvas.toDataURL()});
-    }
+// Chat
+function addChat(text, sender) {
+  const chat = document.getElementById("chat-history");
+  const div = document.createElement("div");
+  div.className = "chat-message " + sender;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-    function handleUpload(event){
-      const files=event.target.files;
-      for(let f of files){
-        if(!validateFile(f)) return;
-        addChat(`Uploaded: ${f.name}`,"user");
-        // mock words array
-        words=f.name.split(' ').map((w,i)=>w);
-        renderWords();
-        highlightMock();
-      }
-    }
+// 字体控制
+function increaseFont() {
+  const el = document.getElementById("reading-text");
+  let size = parseFloat(window.getComputedStyle(el).fontSize);
+  el.style.fontSize = (size + 2) + "px";
+}
 
-    function validateFile(file){
-      if(!ALLOWED_TYPES.includes(file.type)){showInlineError('Only PDF/PNG/JPG/WEBP allowed');return false;}
-      if(file.size>MAX_SIZE){showInlineError('File too large');return false;}
-      return true;
-    }
+function decreaseFont() {
+  const el = document.getElementById("reading-text");
+  let size = parseFloat(window.getComputedStyle(el).fontSize);
+  if (size > 16) el.style.fontSize = (size - 2) + "px";
+}
+</script>
 
-    function showInlineError(msg){
-      addChat("Error: "+msg,"ai");
-    }
-
-    function renderWords(){
-      const container=document.getElementById("reading-text");
-      container.innerHTML='';
-      words.forEach((w,i)=>{
-        const span=document.createElement("span");
-        span.textContent=w+' ';
-        span.dataset.wordIndex=i;
-        container.appendChild(span);
-      });
-    }
-
-    function highlightMock(){
-      currentWord=0;
-      const interval=setInterval(()=>{
-        if(currentWord>words.length-1){clearInterval(interval);return;}
-        document.querySelectorAll("#reading-text span").forEach(s=>s.classList.remove("active-word"));
-        const span=document.querySelector(`#reading-text span[data-word-index='${currentWord}']`);
-        if(span) span.classList.add("active-word");
-        currentWord++;
-      },600);
-    }
-
-    function playMock(){
-      const msg="Hello. I am Lexi. I will read this text for you.";
-      speak(msg);
-      addChat(msg,"ai");
-    }
-
-    function speak(text){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=0.9;u.pitch=1;speechSynthesis.speak(u);}
-
-    function stopSpeech(){speechSynthesis.cancel();}
-    function explainSimply(){const msg="Here is a simpler explanation of the text.";speak(msg);addChat(msg,"ai");}
-    function addChat(text,sender){const chatArea=document.getElementById("chat-history");const div=document.createElement("div");div.className=`chat-message ${sender}`;div.textContent=text;chatArea.appendChild(div);chatArea.scrollTop=chatArea.scrollHeight;}
-    function increaseFont(){const el=document.getElementById("reading-text");let size=parseFloat(window.getComputedStyle(el).fontSize);el.style.fontSize=size+2+"px";}
-    function decreaseFont(){const el=document.getElementById("reading-text");let size=parseFloat(window.getComputedStyle(el).fontSize);if(size>16) el.style.fontSize=size-2+"px";}
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
