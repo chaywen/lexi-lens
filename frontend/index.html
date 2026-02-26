@@ -1,56 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LexiLens UI</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div id="app">
-    <div class="main-layout">
-      <!-- Camera Card -->
-      <div class="camera-card">
-        <div class="camera-inner">
-          <video id="video" autoplay muted></video>
-          <div class="camera-overlay">
-            <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
-            <button id="snapshot-btn" class="btn">📸 Snapshot</button>
-            <button id="upload-btn" class="btn">📄 Upload</button>
-            <input type="file" id="file-input" style="display:none" multiple>
-          </div>
+<div class="main-layout">
+  <div class="camera-card">
+    <div class="reading-mode-tag">Reading Mode</div>
+    <div class="camera-inner">
+      <video id="video" autoplay muted></video>
+    </div>
+    
+    <div class="camera-overlay">
+      <button id="mic-btn" class="btn-circle">🎙</button>
+      <button id="snapshot-btn" class="btn-snapshot">
+        <span style="font-size: 20px;">📷</span>
+        <div>
+          <div style="font-size: 14px;">Snapshot</div>
+          <div style="font-size: 10px; opacity: 0.7;">Upload Document</div>
         </div>
-      </div>
-
-      <!-- Right Panel -->
-      <div class="right-panel">
-        <!-- Text Display Area -->
-        <div class="text-display">
-          <div class="panel-title">Text Display Area</div>
-          <div id="reading-text">
-            <p>The recognized text will appear here.</p>
-          </div>
-        </div>
-
-        <!-- Chat Log Area -->
-        <div class="chat-history">
-          <div class="panel-title">Chat Log Area</div>
-          <div id="chat-history">
-            <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
-          </div>
-        </div>
-
-        <!-- Control Buttons -->
-        <div class="control-bar">
-          <button id="explain-btn" class="btn-outline">Explain Simply</button>
-          <button id="stop-btn" class="btn-outline">Stop Reading</button>
-          <button id="font-increase" class="btn-outline">A+</button>
-          <button id="font-decrease" class="btn-outline">A-</button>
-        </div>
-      </div>
+      </button>
+      <button id="upload-btn" class="btn-circle" style="background:#e5e7eb; color:#1f2933;">📄</button>
+      <input type="file" id="file-input" style="display:none" multiple>
     </div>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <div class="right-panel">
+    <div class="text-display">
+      <div class="panel-title">Text Display Area</div>
+      <div id="reading-text">
+        <p style="color: #666;">Arial 20px fields... (The text will appear here)</p>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="panel-title">Chat Log Area</div>
+      <div id="chat-history" class="chat-history-list">
+        <div class="chat-message ai"><strong>Lexi:</strong><br>Hello! I am ready to read for you.</div>
+      </div>
+      
+      <div class="control-bar">
+        <button id="explain-btn" class="btn-outline">[ Explain Simply ]</button>
+        <button id="stop-btn" class="btn-outline">[ Stop Reading ]</button>
+      </div>
+    </div>
+  </div>
+</div>
