@@ -1,21 +1,17 @@
-// ===== CONFIG =====
 const CONFIG = {
   WS_URL: "ws://localhost:8080/ws/session",
   API_URL: "http://localhost:8080"
 };
 
-// ===== STATE =====
 let isRecording = false;
 let mediaRecorder = null;
 let videoStream = null;
 
-// ===== DOMContentLoaded =====
 window.addEventListener("DOMContentLoaded", () => {
   initCamera();
   setupEvents();
 });
 
-// ===== CAMERA =====
 async function initCamera() {
   try {
     videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -25,30 +21,20 @@ async function initCamera() {
   }
 }
 
-// ===== EVENTS =====
 function setupEvents() {
   document.getElementById("mic-btn").addEventListener("click", toggleMic);
   document.getElementById("snapshot-btn").addEventListener("click", takeSnapshot);
   document.getElementById("upload-btn").addEventListener("click", () =>
     document.getElementById("file-input").click()
   );
-  document.getElementById("mock-btn").addEventListener("click", playMock);
-  document.getElementById("stop-btn").addEventListener("click", stopSpeech);
-  document.getElementById("explain-btn").addEventListener("click", explainSimply);
-
+  document.getElementById("file-input").addEventListener("change", handleUpload);
+  document.getElementById("mock-btn")?.addEventListener("click", playMock);
+  document.getElementById("stop-btn")?.addEventListener("click", stopSpeech);
+  document.getElementById("explain-btn")?.addEventListener("click", explainSimply);
   document.getElementById("font-increase")?.addEventListener("click", increaseFont);
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
-
-  // Drag & Drop
-  const dropZone = document.getElementById("uploaded-files");
-  dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
-  dropZone.addEventListener("dragleave", (e) => { dropZone.classList.remove("dragover"); });
-  dropZone.addEventListener("drop", (e) => { e.preventDefault(); dropZone.classList.remove("dragover"); handleUpload(e.dataTransfer.files); });
-
-  document.getElementById("file-input").addEventListener("change", (e) => handleUpload(e.target.files));
 }
 
-// ===== MIC =====
 async function toggleMic() {
   if (!isRecording) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -62,25 +48,28 @@ async function toggleMic() {
   }
 }
 
-// ===== SNAPSHOT =====
 function takeSnapshot() {
   const video = document.getElementById("video");
   const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0);
+  canvas.getContext("2d").drawImage(video, 0, 0);
   addChat("Snapshot captured.", "ai");
 }
 
-// ===== MOCK VOICE =====
+function handleUpload(event) {
+  const files = event.target.files;
+  for (let f of files) {
+    addChat(`Uploaded: ${f.name}`, "user");
+  }
+}
+
 function playMock() {
   const msg = "Hello. I am Lexi. I will read this text for you.";
   speak(msg);
   addChat(msg, "ai");
 }
 
-// ===== SPEECH =====
 function speak(text) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -93,14 +82,12 @@ function stopSpeech() {
   speechSynthesis.cancel();
 }
 
-// ===== EXPLAIN SIMPLY =====
 function explainSimply() {
   const msg = "Here is a simpler explanation of the text.";
   speak(msg);
   addChat(msg, "ai");
 }
 
-// ===== CHAT =====
 function addChat(text, sender) {
   const chatArea = document.getElementById("chat-history");
   const div = document.createElement("div");
@@ -110,7 +97,6 @@ function addChat(text, sender) {
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// ===== FONT CONTROL =====
 function increaseFont() {
   const el = document.getElementById("reading-text");
   let size = parseFloat(window.getComputedStyle(el).fontSize);
@@ -120,28 +106,5 @@ function increaseFont() {
 function decreaseFont() {
   const el = document.getElementById("reading-text");
   let size = parseFloat(window.getComputedStyle(el).fontSize);
-  if (size > 16) {
-    el.style.fontSize = size - 2 + "px";
-  }
-}
-
-// ===== FILE UPLOAD =====
-function handleUpload(files) {
-  const uploadedArea = document.getElementById("uploaded-files");
-  for (const file of files) {
-    const allowed = ['application/pdf','image/png','image/jpeg','image/webp'];
-    if (!allowed.includes(file.type)) { alert("Only PDF/PNG/JPG/WEBP allowed"); continue; }
-
-    const div = document.createElement("div");
-    div.className = "uploaded-file";
-    div.textContent = file.name;
-
-    if (file.type.startsWith("image/")) {
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-      div.appendChild(img);
-    }
-
-    uploadedArea.appendChild(div);
-  }
+  if (size > 16) el.style.fontSize = size - 2 + "px";
 }
