@@ -1,1 +1,565 @@
-<!DOCTYPE html>\n<html lang=\
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ws: wss:;">
+  <title>LexiLens - AI Reading Companion</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.5;
+      background-color: #FAFAFA;
+      color: #1A1A1A;
+      overflow: hidden;
+    }
+    
+    #app {
+      display: flex;
+      height: 100vh;
+      gap: 20px;
+      padding: 20px;
+    }
+    
+    .camera-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    #video {
+      flex: 1;
+      width: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+    
+    .floating-bar {
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 12px 20px;
+      height: 48px;
+      background: #7B2D8B;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #5a1f67;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    .subtitle-area {
+      flex: 1;
+      padding: 12px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      font-size: 16px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .voice-visualizer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 48px;
+      padding: 0 12px;
+    }
+    
+    .visualizer-bar {
+      width: 4px;
+      height: 20px;
+      background: #117A65;
+      border-radius: 2px;
+      opacity: 0.5;
+      animation: pulse 0.6s ease-in-out infinite;
+    }
+    
+    .visualizer-bar:nth-child(1) { animation-delay: 0s; }
+    .visualizer-bar:nth-child(2) { animation-delay: 0.1s; }
+    .visualizer-bar:nth-child(3) { animation-delay: 0.2s; }
+    .visualizer-bar:nth-child(4) { animation-delay: 0.3s; }
+    .visualizer-bar:nth-child(5) { animation-delay: 0.4s; }
+    
+    @keyframes pulse {
+      0%, 100% { height: 20px; opacity: 0.5; }
+      50% { height: 40px; opacity: 1; }
+    }
+    
+    .document-panel {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .document-panel h3 {
+      margin-bottom: 16px;
+      color: #7B2D8B;
+    }
+    
+    #drop-zone {
+      flex: 1;
+      border: 3px dashed #117A65;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    #drop-zone:hover {
+      background: #f0f8f7;
+      border-color: #0d5a4f;
+    }
+    
+    #drop-zone.dragging {
+      background: #e6f3f0;
+      border-color: #117A65;
+    }
+    
+    #file-input {
+      display: none;
+    }
+    
+    .mode-selector-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+    }
+    
+    .mode-selector-overlay.hidden {
+      display: none;
+    }
+    
+    .mode-selector-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      max-width: 600px;
+    }
+    
+    .mode-selector-content h2 {
+      margin-bottom: 30px;
+      color: #7B2D8B;
+      font-size: 28px;
+    }
+    
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .mode-btn {
+      padding: 24px;
+      height: 120px;
+      background: #117A65;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .mode-btn:hover {
+      background: #0d5a4f;
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(17, 122, 101, 0.3);
+    }
+    
+    .mode-btn:active {
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 1024px) {
+      #app {
+        flex-direction: column;
+      }
+      
+      .mode-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      body {
+        font-size: 16px;
+      }
+      
+      #app {
+        padding: 12px;
+        gap: 12px;
+      }
+      
+      .floating-bar {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+      
+      .document-panel {
+        padding: 12px;
+      }
+      
+      .mode-selector-content {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mode Selector Overlay -->
+  <div id="mode-selector-overlay" class="mode-selector-overlay">
+    <div class="mode-selector-content">
+      <h2>Choose a Mode</h2>
+      <div class="mode-buttons">
+        <button class="mode-btn" data-mode="book" aria-label="Book Reading Mode">📖 Book Reading</button>
+        <button class="mode-btn" data-mode="form" aria-label="Form Filling Mode">📋 Filling a Form</button>
+        <button class="mode-btn" data-mode="study" aria-label="Study Mode">🎓 Studying for School</button>
+        <button class="mode-btn" data-mode="write" aria-label="Writing Mode">✍️ Writing Something</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app">
+    <!-- Camera Panel -->
+    <div class="camera-panel">
+      <video id="video" playsinline aria-label="Camera feed for reading"></video>
+      <div class="floating-bar">
+        <button id="mic-btn" aria-label="Toggle microphone">🎤 Mic</button>
+        <div class="subtitle-area" id="subtitle-area" aria-live="polite">Listening...</div>
+        <div class="voice-visualizer" id="visualizer" role="img" aria-label="Voice activity visualizer">
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+        </div>
+        <button id="mode-switch-btn" aria-label="Switch mode">⚙️ Mode</button>
+        <button id="snapshot-btn" aria-label="Take snapshot">📸 Snapshot</button>
+      </div>
+    </div>
+
+    <!-- Document Panel -->
+    <div class="document-panel">
+      <h3>Documents & Transcription</h3>
+      <div id="drop-zone" role="region" aria-label="Drag and drop zone for document upload">
+        <div>📄 Drag & drop PDF or image here</div>
+        <div style="font-size: 14px; color: #666;">or click to browse</div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,image/*" aria-label="File input for document upload">
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIGURATION ==========
+    const CONFIG = {
+      WS_URL: 'ws://localhost:8080/ws/session',
+      API_URL: 'http://localhost:8080'
+    };
+
+    // ========== STATE ==========
+    let ws = null;
+    let mediaRecorder = null;
+    let audioContext = null;
+    let audioWorklet = null;
+    let currentMode = null;
+    let isRecording = false;
+    let videoStream = null;
+
+    // ========== INITIALIZATION ==========
+    window.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+      initCamera();
+      connectWebSocket();
+      setupAudioContext();
+    });
+
+    // ========== CAMERA SETUP ==========
+    async function initCamera() {
+      try {
+        const video = document.getElementById('video');
+        videoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = videoStream;
+      } catch (err) {
+        console.error('Camera access denied:', err);
+        alert('Camera access required for LexiLens');
+      }
+    }
+
+    // ========== AUDIO CONTEXT SETUP ==========
+    function setupAudioContext() {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    // ========== WEBSOCKET CONNECTION ==========
+    function connectWebSocket() {
+      ws = new WebSocket(CONFIG.WS_URL);
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+      };
+      
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        handleWebSocketMessage(msg);
+      };
+      
+      ws.onerror = (err) => {
+        console.error('WebSocket error:', err);
+      };
+      
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setTimeout(connectWebSocket, 3000); // Reconnect after 3s
+      };
+    }
+
+    // ========== WEBSOCKET MESSAGE HANDLER ==========
+    function handleWebSocketMessage(msg) {
+      if (msg.type === 'audio_chunk') {
+        playAudioChunk(msg.data);
+      } else if (msg.type === 'subtitle') {
+        updateSubtitle(msg.text);
+      } else if (msg.type === 'highlight') {
+        highlightWord(msg.word_index);
+      }
+    }
+
+    // ========== AUDIO PLAYBACK ==========
+    function playAudioChunk(base64Audio) {
+      try {
+        const binaryString = atob(base64Audio);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        
+        audioContext.decodeAudioData(bytes.buffer, (buffer) => {
+          const source = audioContext.createBufferSource();
+          source.buffer = buffer;
+          source.connect(audioContext.destination);
+          source.start(0);
+        });
+      } catch (err) {
+        console.error('Audio playback error:', err);
+      }
+    }
+
+    // ========== SUBTITLE UPDATE ==========
+    function updateSubtitle(text) {
+      document.getElementById('subtitle-area').textContent = text;
+    }
+
+    // ========== WORD HIGHLIGHTING ==========
+    function highlightWord(wordIndex) {
+      document.querySelectorAll('[data-word-index]').forEach(span => {
+        span.classList.remove('active-word');
+      });
+      const span = document.querySelector(`[data-word-index='${wordIndex}']`);
+      if (span) {
+        span.classList.add('active-word');
+        span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // ========== EVENT LISTENERS ==========
+    function setupEventListeners() {
+      // Mode buttons
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', selectMode);
+      });
+
+      // Mic button
+      document.getElementById('mic-btn').addEventListener('click', toggleMicrophone);
+
+      // Mode switch button
+      document.getElementById('mode-switch-btn').addEventListener('click', showModeSelector);
+
+      // Snapshot button
+      document.getElementById('snapshot-btn').addEventListener('click', takeSnapshot);
+
+      // File upload
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragging');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragging');
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragging');
+        if (e.dataTransfer.files[0]) {
+          handleFileUpload(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+          handleFileUpload(e.target.files[0]);
+        }
+      });
+    }
+
+    // ========== MODE SELECTION ==========
+    function selectMode(event) {
+      currentMode = event.target.dataset.mode;
+      console.log('Mode selected:', currentMode);
+      document.getElementById('mode-selector-overlay').classList.add('hidden');
+      sendMessage('mode_selected', { mode: currentMode });
+    }
+
+    function showModeSelector() {
+      document.getElementById('mode-selector-overlay').classList.remove('hidden');
+    }
+
+    // ========== MICROPHONE ==========
+    async function toggleMicrophone() {
+      if (!isRecording) {
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(audioStream);
+
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              sendAudioChunk(event.data);
+            }
+          };
+
+          mediaRecorder.start(100); // Send chunks every 100ms
+          isRecording = true;
+          document.getElementById('mic-btn').textContent = '🔴 Stop Mic';
+        } catch (err) {
+          console.error('Microphone access denied:', err);
+        }
+      } else {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        isRecording = false;
+        document.getElementById('mic-btn').textContent = '🎤 Mic';
+      }
+    }
+
+    function sendAudioChunk(blob) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(e.target.result)));
+        sendMessage('audio_chunk', { data: base64 });
+      };
+      reader.readAsArrayBuffer(blob);
+    }
+
+    // ========== SNAPSHOT ==========
+    function takeSnapshot() {
+      const video = document.getElementById('video');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const base64 = canvas.toDataURL('image/jpeg').split(',')[1];
+      sendMessage('snapshot', { frame: base64 });
+    }
+
+    // ========== FILE UPLOAD ==========
+    function handleFileUpload(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const endpoint = file.type === 'application/pdf' ? '/api/upload' : '/api/upload-image';
+      
+      fetch(CONFIG.API_URL + endpoint, {
+        method: 'POST',
+        body: formData
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.words) {
+          renderDocument(data.words);
+        }
+      })
+      .catch(err => console.error('Upload error:', err));
+    }
+
+    function renderDocument(words) {
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.innerHTML = words.map((word, i) => 
+        `<span data-word-index="${i}">${word}</span> `
+      ).join('');
+    }
+
+    // ========== MESSAGING HELPER ==========
+    function sendMessage(type, payload = {}) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type, ...payload }));
+      }
+    }
+  </script>
+</body>
+</html>
