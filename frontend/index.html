@@ -42,9 +42,9 @@
         <button id="snapshot-btn">📸 Snapshot</button>
       </div>
 
-      <!-- Mock Response 按钮 -->
-<div style="margin-top: 15px; text-align:center; width:100%;">
-  <button id="mock-btn" style="padding: 12px 24px; font-size: 16px; background:#117A65; color:white; border:none; border-radius:6px; cursor:pointer;">
+      <!-- ✅ Mock Response 按钮，始终可见 -->
+      <div style="margin-top: 15px; text-align:center; width:100%;">
+        <button id="mock-btn" style="padding:12px 24px; font-size:16px; background:#117A65; color:white; border:none; border-radius:6px; cursor:pointer;">
           Play Mock Response
         </button>
       </div>
@@ -63,33 +63,28 @@
 
   <script src="script.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const mockBtn = document.getElementById("mock-btn");
-      mockBtn.addEventListener("click", () => {
-        console.log("Mock button clicked");
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance("Hello! I am Lexi.");
-          utterance.pitch = 1;
-          utterance.rate = 1;
-          utterance.volume = 1;
-          speechSynthesis.speak(utterance);
-        } else {
-          alert("Your browser does not support SpeechSynthesis API");
-        }
-      });
+    // ✅ Phase 1 CONFIG 对象
+    const CONFIG = { WS_URL:"ws://localhost:8080/ws/session", API_URL:"http://localhost:8080" };
 
-      // Mode 按钮点击发声
-      document.querySelectorAll(".mode-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const mode = btn.dataset.mode;
-          if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(`You selected ${mode} mode`);
-            utterance.pitch = 1;
-            utterance.rate = 1;
-            utterance.volume = 1;
-            speechSynthesis.speak(utterance);
-          }
-        });
+    // —— Mock Response 按钮，直接测试声音
+    const mockBtn = document.getElementById("mock-btn");
+    mockBtn.addEventListener("click", () => {
+      console.log("Mock button clicked!");
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance("Hello! I am Lexi.");
+        utterance.volume = 1;
+        speechSynthesis.speak(utterance);
+      } else {
+        alert("SpeechSynthesis 不支持");
+      }
+    });
+
+    // —— Mode 按钮点击也能播声音
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.mode;
+        const utterance = new SpeechSynthesisUtterance(`You selected ${mode} mode`);
+        speechSynthesis.speak(utterance);
       });
     });
   </script>
