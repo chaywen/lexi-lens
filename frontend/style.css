@@ -9,7 +9,7 @@ body {
 /* Main Layout */
 .main-layout {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: 400px 1fr; /* 左边摄像头固定宽度 */
   gap: 20px;
   padding: 20px;
   height: 100vh;
@@ -21,21 +21,21 @@ body {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* 顶部对齐 */
 }
 
 /* Inner black semi-transparent box */
 .camera-inner {
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.6);
   border-radius: 24px;
   padding: 12px;
   width: 100%;
-  height: 100%;
+  height: 320px; /* 调整摄像头高度 */
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.25);
 }
 
 /* Video inside inner box */
@@ -49,28 +49,40 @@ body {
 /* Overlay Buttons */
 .camera-overlay {
   position: absolute;
-  bottom: 15px;
-  left: 15px;
+  bottom: 12px;
+  left: 12px;
   display: flex;
   gap: 10px;
 }
 
+/* Button Styles */
 .btn {
-  padding: 10px 14px;
-  border-radius: 16px;
+  padding: 10px 16px;
+  border-radius: 18px;
   border: none;
   font-size: 14px;
   cursor: pointer;
-  background: #5b4fff;
-  color: #fff;
   transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
+/* 紫色按钮 */
+.btn.mic-btn {
+  background: #7c3aed; /* 紫色 */
+  color: #fff;
+}
+
+/* 浅米色按钮 */
+.btn:not(.mic-btn) {
+  background: #fff7e6; /* 米白 */
+  color: #7c3aed; /* 紫色文字 */
+  border: 1px solid #e9d5ff;
+}
+
+/* Hover */
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-}
-.mic-btn {
-  background: #8b5cf6;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }
 
 /* ===== Right Panel ===== */
@@ -89,7 +101,7 @@ body {
 
 /* Text Display */
 .text-display {
-  background: #fff7e6; /* 浅黄色 */
+  background: #fff7e6;
   border-radius: 16px;
   padding: 20px;
   font-size: 18px;
@@ -103,39 +115,43 @@ body {
 
 /* Chat History */
 .chat-history {
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
-  padding: 15px;
+  padding: 12px;
   flex: 1;
   overflow-y: auto;
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* Chat Messages with tail */
+/* Chat Messages */
 .chat-message {
   position: relative;
   margin-bottom: 10px;
-  padding: 12px 16px;
-  border-radius: 16px;
-  max-width: 75%;
+  padding: 14px 18px;
+  border-radius: 20px;
+  max-width: 70%;
   word-wrap: break-word;
   font-size: 14px;
+  line-height: 1.5;
 }
 
 /* AI Bubble */
 .chat-message.ai {
-  background: #d8b4fe; /* 浅紫 */
+  background: #d8b4fe;
   color: #1f2933;
   align-self: flex-start;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 .chat-message.ai::after {
   content: '';
   position: absolute;
-  left: -8px;
-  top: 12px;
+  left: -6px;
+  top: 14px;
   width: 0;
   height: 0;
   border-top: 8px solid transparent;
@@ -145,20 +161,23 @@ body {
 
 /* User Bubble */
 .chat-message.user {
-  background: #4b5563; /* 深灰 */
-  color: #f9fafb;
+  background: #fff7e6;
+  color: #7c3aed;
   align-self: flex-end;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 .chat-message.user::after {
   content: '';
   position: absolute;
-  right: -8px;
-  top: 12px;
+  right: -6px;
+  top: 14px;
   width: 0;
   height: 0;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  border-left: 8px solid #4b5563;
+  border-left: 8px solid #fff7e6;
 }
 
 /* Control Bar Buttons */
