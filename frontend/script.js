@@ -14,7 +14,7 @@ class MockWebSocket {
 window.addEventListener('DOMContentLoaded', ()=>{
   setupEventListeners();
   initCamera();
-  ws = new MockWebSocket(CONFIG.WS_URL);
+  ws = new MockWebSocket(CONFIG.WS_URL); // 使用 Mock 测试 Phase1
   setupAudioContext();
 });
 
@@ -48,6 +48,30 @@ function setupEventListeners(){
     if(e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]);
   });
   fileInput.addEventListener('change',(e)=>{ if(e.target.files[0]) handleFileUpload(e.target.files[0]); });
+
+  // ===== ✅ Mock Response 按钮事件 =====
+  const mockBtn = document.getElementById("mock-btn");
+  mockBtn.addEventListener("click", () => {
+    console.log("Mock button clicked!"); // 测试事件是否触发
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance("Hello! I am Lexi.");
+      utterance.volume = 1;
+      speechSynthesis.speak(utterance);
+    } else {
+      alert("SpeechSynthesis 不支持");
+    }
+  });
+
+  // Mode 按钮也播放声音
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const mode = btn.dataset.mode;
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(`You selected ${mode} mode`);
+        speechSynthesis.speak(utterance);
+      }
+    });
+  });
 }
 
 // ===== MODE SELECTION =====
