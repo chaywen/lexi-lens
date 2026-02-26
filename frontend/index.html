@@ -3,165 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Reading Assistant</title>
+<title>LexiLens Phase 2 Mock Test</title>
 <style>
-  body { font-family: sans-serif; margin:0; display:flex; height:100vh; }
-  .main-layout { display:flex; flex:1; }
-  .camera-panel { flex:1; background:#222; display:flex; justify-content:center; align-items:center; position:relative; }
-  video { width:100%; height:100%; object-fit:cover; border-radius:12px; }
-  .right-panel { width:400px; background:#f5f5f5; display:flex; flex-direction:column; padding:10px; box-sizing:border-box; }
-  .text-display { flex:1; overflow-y:auto; border:1px solid #ccc; padding:10px; border-radius:8px; }
-  .chat-history { height:120px; overflow-y:auto; border-top:1px solid #ccc; margin-top:10px; padding:5px; }
-  .control-bar { margin-top:10px; display:flex; gap:5px; }
-  .active-word { background:yellow; transition: background 0.3s; }
-  button { padding:6px 10px; border:none; border-radius:6px; cursor:pointer; }
+body { margin:0;font-family:'Inter',sans-serif;background:#f4f6f8;color:#1f2933; }
+.main-layout { display:grid; grid-template-columns:1.3fr 1fr; gap:20px; padding:20px; height:100vh; box-sizing:border-box;}
+.camera-inner { background: rgba(0,0,0,0.6); border-radius:24px; padding:12px; height:100%; position:relative; display:flex; justify-content:center; align-items:center; }
+#video { width:100%; height:100%; object-fit:cover; border-radius:20px; }
+.camera-overlay { position:absolute; bottom:15px; left:15px; display:flex; gap:10px; }
+.btn { padding:10px 14px; border-radius:16px; border:none; cursor:pointer; background:#5b4fff; color:white; }
+.right-panel { display:flex; flex-direction:column; gap:20px; }
+.text-display { background:#fff7e6; border-radius:16px; padding:20px; font-size:18px; flex:1; overflow-y:auto; }
+.chat-history { background:white; border-radius:16px; padding:15px; flex:1; overflow-y:auto; }
+.chat-message { padding:10px; margin-bottom:8px; border-radius:12px; max-width:70%; }
+.chat-message.ai { background:#d8b4fe; }
+.chat-message.user { background:#4b5563; color:white; margin-left:auto; }
+.control-bar { display:flex; gap:10px; }
+.btn-outline { padding:8px 12px; border-radius:12px; border:1px solid #ccc; background:white; cursor:pointer; }
+.active-word { background: #ffd54f; }
 </style>
 </head>
 <body>
+
 <div class="main-layout">
-  <div class="camera-panel">
-    <video id="camera" autoplay muted></video>
-    <button id="snapshot-btn" style="position:absolute;bottom:10px;right:10px;">Snapshot</button>
-  </div>
-  <div class="right-panel">
-    <div class="text-display" id="text-display">Loading...</div>
-    <div class="chat-history" id="chat-history"></div>
-    <div class="control-bar">
-      <button id="mic-btn">🎤 Mic</button>
-      <button id="upload-btn">📁 Upload</button>
-      <input type="file" id="file-input" style="display:none;">
-      <button id="font-increase">A+</button>
-      <button id="font-decrease">A-</button>
+
+  <!-- Camera Card -->
+  <div class="camera-card">
+    <div class="camera-inner">
+      <video id="video" autoplay muted playsinline></video>
+      <div class="camera-overlay">
+        <button id="mic-btn" class="btn">🎙 Mic</button>
+        <button id="snapshot-btn" class="btn">📸 Snapshot</button>
+        <button id="upload-btn" class="btn">📄 Upload</button>
+        <input type="file" id="file-input" hidden>
+      </div>
     </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <div class="text-display" id="reading-text">
+      <p>The recognized text will appear here.</p>
+    </div>
+
+    <div class="chat-history" id="chat-history">
+      <div class="chat-message ai">
+        Lexi: Hello! I am ready to read for you.
+      </div>
+    </div>
+
+    <div class="control-bar">
+      <button id="explain-btn" class="btn-outline">Explain Simply</button>
+      <button id="stop-btn" class="btn-outline">Stop Reading</button>
+      <button id="font-increase" class="btn-outline">A+</button>
+      <button id="font-decrease" class="btn-outline">A-</button>
+    </div>
+
   </div>
 </div>
 
 <script>
-const CONFIG = { WS_URL:'wss://your-backend.example/ws', API_URL:'https://your-backend.example', MAX_FILE_SIZE: 10*1024*1024 };
-const SESSION_TOKEN = crypto.randomUUID();
-let ws;
-
-// -------------------- WebSocket --------------------
-function initWebSocket() {
-  ws = new WebSocket(CONFIG.WS_URL);
-  ws.onopen = () => console.log('WS connected');
-  ws.onmessage = e => handleWSMessage(JSON.parse(e.data));
-  ws.onclose = () => setTimeout(initWebSocket, 2000); // reconnect
+// =====================
+// Mock WebSocket for local testing
+// =====================
+let wsMock = {
+  send: (msg) => {
+    console.log("Mock WS send:", msg);
+    // 模拟服务器响应：高亮第一条文字
+    setTimeout(() => {
+      const data = JSON.parse(msg);
+      if(data.type === "snapshot") {
+        addChat("Server: Snapshot received.", "ai");
+      } else if(data.type === "upload") {
+        addChat(`Server: File "${data.name}" processed.`, "ai");
+      }
+    },500);
+  }
+};
+function sendMessage(type, payload) {
+  wsMock.send(JSON.stringify({type, session_token:"mock_token_123", ...payload}));
 }
 
-function sendMessage(type, payload={}) {
-  if (!ws || ws.readyState !== WebSocket.OPEN) return;
-  ws.send(JSON.stringify({ type, session_token: SESSION_TOKEN, ...payload }));
-}
+// =====================
+// Camera
+// =====================
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => { document.getElementById("video").srcObject = stream; })
+  .catch(err => console.error(err));
 
-function handleWSMessage(msg) {
-  if(msg.type === 'highlight') highlightWord(msg.word_index);
-  else if(msg.type === 'chat') addChat('ai', msg.text);
-}
-
-// -------------------- Camera --------------------
-const video = document.getElementById('camera');
-navigator.mediaDevices.getUserMedia({video:true})
-  .then(stream => video.srcObject = stream)
-  .catch(console.error);
-
-document.getElementById('snapshot-btn').addEventListener('click', takeSnapshot);
-
-function takeSnapshot() {
-  const canvas = document.createElement('canvas');
+document.getElementById("snapshot-btn").addEventListener("click", () => {
+  const video = document.getElementById("video");
+  const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video,0,0);
-  const dataURL = canvas.toDataURL('image/png');
-  sendMessage('snapshot', { frame: dataURL });
-}
+  canvas.getContext("2d").drawImage(video,0,0);
+  const frame = canvas.toDataURL("image/png");
+  sendMessage("snapshot", {frame});
+  addChat("Snapshot sent", "user");
+});
 
-// -------------------- Mic --------------------
-let recorder, audioChunks=[];
-const micBtn = document.getElementById('mic-btn');
-micBtn.addEventListener('click', toggleMic);
+// =====================
+// File Upload
+// =====================
+document.getElementById("upload-btn").addEventListener("click", () => {
+  document.getElementById("file-input").click();
+});
 
-async function toggleMic() {
-  if(recorder && recorder.state==='recording'){ recorder.stop(); return; }
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  recorder = new MediaRecorder(stream);
-  recorder.ondataavailable = e => {
-    if(e.data.size>0){
-      e.arrayBuffer().then(buf=>{
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-        sendMessage('audio_chunk',{ audio: base64 });
-      });
-    }
-  };
-  recorder.start();
-}
-
-// -------------------- Chat History --------------------
-function addChat(role,text){
-  const div = document.createElement('div');
-  div.textContent = `${role==='user'?'You':'AI'}: ${text}`;
-  document.getElementById('chat-history').appendChild(div);
-  document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-}
-
-// -------------------- File Upload --------------------
-const uploadBtn = document.getElementById('upload-btn');
-const fileInput = document.getElementById('file-input');
-uploadBtn.addEventListener('click',()=>fileInput.click());
-fileInput.addEventListener('change', handleUpload);
-
-async function handleUpload(e){
+document.getElementById("file-input").addEventListener("change", (e) => {
   const file = e.target.files[0];
   if(!file) return;
-  if(!['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type)){
-    alert('Invalid file type'); return;
-  }
-  if(file.size>CONFIG.MAX_FILE_SIZE){ alert('File too large'); return; }
+  const allowed = ["image/png","image/jpeg","image/webp","application/pdf"];
+  if(!allowed.includes(file.type)) { alert("Unsupported file type"); return; }
+  if(file.size > 10*1024*1024) { alert("File too large"); return; }
+  sendMessage("upload", {name:file.name, size:file.size, type:file.type});
+  addChat(`Uploaded ${file.name}`, "user");
+});
 
-  const formData = new FormData();
-  formData.append('file',file);
-  try {
-    const resp = await fetch(`${CONFIG.API_URL}/api/upload`, {method:'POST', body:formData});
-    if(!resp.ok) throw new Error('Upload failed');
-    const data = await resp.json();
-    renderTextMock(data.words || mockWords());
-  } catch(err){ console.error(err); alert('Upload failed'); }
+// =====================
+// Speech Recognition
+// =====================
+let recognition;
+let isRecording = false;
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition) { alert("Speech Recognition not supported. Use Chrome."); return; }
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = function(event) {
+    let transcript = "";
+    for(let i=event.resultIndex;i<event.results.length;i++)
+      transcript += event.results[i][0].transcript;
+    document.getElementById("reading-text").innerText = transcript;
+  };
+}
+initSpeechRecognition();
+
+document.getElementById("mic-btn").addEventListener("click", () => {
+  if(!isRecording){ recognition.start(); isRecording=true; addChat("Listening...","user"); }
+  else { recognition.stop(); isRecording=false; }
+});
+
+// =====================
+// Chat
+// =====================
+function addChat(text, sender) {
+  const chat = document.getElementById("chat-history");
+  const div = document.createElement("div");
+  div.className = "chat-message " + sender;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-// -------------------- Word Rendering & Highlight --------------------
-const textDisplay = document.getElementById('text-display');
+// =====================
+// Font Control
+// =====================
+document.getElementById("font-increase").addEventListener("click", () => {
+  const el = document.getElementById("reading-text");
+  let size = parseFloat(window.getComputedStyle(el).fontSize);
+  el.style.fontSize = (size+2)+"px";
+});
+document.getElementById("font-decrease").addEventListener("click", () => {
+  const el = document.getElementById("reading-text");
+  let size = parseFloat(window.getComputedStyle(el).fontSize);
+  if(size>16) el.style.fontSize=(size-2)+"px";
+});
 
-function renderTextMock(words){
-  textDisplay.innerHTML = '';
-  words.forEach((w,i)=>{
-    const span = document.createElement('span');
-    span.textContent = w + ' ';
+// =====================
+// Control Bar Buttons
+// =====================
+document.getElementById("explain-btn").addEventListener("click", () => addChat("Explain Simply clicked", "user"));
+document.getElementById("stop-btn").addEventListener("click", () => addChat("Stop Reading clicked", "user"));
+
+// =====================
+// Mock Highlighter for testing
+// =====================
+let mockWords = ["This","is","a","mock","text","for","highlighting","test","phase","2"];
+function renderMockText() {
+  const container = document.getElementById("reading-text");
+  container.innerHTML = "";
+  mockWords.forEach((w,i) => {
+    const span = document.createElement("span");
+    span.innerText = w + " ";
     span.dataset.wordIndex = i;
-    textDisplay.appendChild(span);
+    container.appendChild(span);
   });
 }
+renderMockText();
 
-function highlightWord(index){
-  textDisplay.querySelectorAll('span').forEach(s=>s.classList.remove('active-word'));
-  const span = textDisplay.querySelector(`span[data-word-index="${index}"]`);
-  if(span){
-    span.classList.add('active-word');
-    span.scrollIntoView({behavior:'smooth', block:'center'});
-  }
-}
-
-// Mock words for testing
-function mockWords(){ return 'This is a sample text for highlighting demo.'.split(' '); }
-
-// -------------------- Font Size --------------------
-let fontSize = 16;
-document.getElementById('font-increase').addEventListener('click',()=>{ fontSize+=2; textDisplay.style.fontSize=fontSize+'px'; });
-document.getElementById('font-decrease').addEventListener('click',()=>{ fontSize=Math.max(10,fontSize-2); textDisplay.style.fontSize=fontSize+'px'; });
-
-// -------------------- Init --------------------
-initWebSocket();
-renderTextMock(mockWords());
+let currentWord = 0;
+setInterval(() => {
+  document.querySelectorAll("#reading-text span").forEach(s=>s.classList.remove("active-word"));
+  const span = document.querySelector(`#reading-text span[data-word-index='${currentWord}']`);
+  if(span) span.classList.add("active-word");
+  currentWord = (currentWord+1)%mockWords.length;
+},1000);
 </script>
+
 </body>
 </html>
