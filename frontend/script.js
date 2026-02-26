@@ -14,7 +14,7 @@ class MockWebSocket {
 window.addEventListener('DOMContentLoaded', ()=>{
   setupEventListeners();
   initCamera();
-  ws = new MockWebSocket(CONFIG.WS_URL); // 使用 Mock 测试 Phase1
+  ws = new MockWebSocket(CONFIG.WS_URL);
   setupAudioContext();
 });
 
@@ -97,7 +97,6 @@ function takeSnapshot(){
 
 // ===== FILE UPLOAD =====
 function handleFileUpload(file){
-  // Phase1 Mock
   const words = ["This","is","a","mock","document"];
   renderDocument(words);
 }
