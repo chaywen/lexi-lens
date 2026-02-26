@@ -1,182 +1,218 @@
 /* Reset & Base */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f6f8; /* 柔和灰白背景 */
-  color: #1f2933;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f0f0f0; /* 底层背景色 */
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 #app {
-  height: 100vh;
+  width: 95%;
+  max-width: 1200px;
+  height: 85vh;
+  display: flex;
+  gap: 25px;
+  padding: 20px;
+}
+
+/* ===== 左侧：相机视图容器 ===== */
+.camera-container {
+  flex: 1.2;
+  background: #3a3a3c; /* 深灰色背景 */
+  border-radius: 24px;
+  position: relative;
   display: flex;
   flex-direction: column;
-}
-
-/* ===== Main Layout ===== */
-.main-layout {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 20px;
   padding: 20px;
-  box-sizing: border-box;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  color: white;
 }
 
-/* ===== Camera ===== */
-.camera-container {
-  background: #e2e8f0; /* 高级灰 */
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
+.camera-header {
+  margin-bottom: 15px;
 }
-.camera-container:hover {
-  transform: scale(1.01);
+
+.mode-badge {
+  background: #8e44ad; /* 紫色标签 */
+  color: white;
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 14px;
+  display: inline-block;
 }
 
 #video {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 12px;
+  flex: 1;
+  background: #000;
+  border-radius: 16px;
+  object-fit: cover;
 }
 
-/* ===== Right Panel ===== */
+.camera-footer {
+  margin-top: 20px;
+}
+
+.camera-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* 控制按钮栏 */
+.control-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-mic {
+  background: #8e44ad;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-snapshot {
+  flex: 1;
+  background: #e0e0e0;
+  height: 60px;
+  border-radius: 30px;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  cursor: pointer;
+  color: #333;
+}
+
+.btn-file {
+  background: #e0e0e0;
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== 右侧面板 ===== */
 .right-panel {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-/* Text Display */
+/* 文本显示区 (米黄色卡片) */
 .text-display {
   flex: 1;
-  background: #ffffff; /* 白色卡片 */
-  border-radius: 16px;
-  padding: 20px;
-  font-size: 20px;
-  line-height: 1.6;
+  background: #fdf6e3; /* 温暖的米黄色 */
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
   overflow-y: auto;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
 }
 
-/* Chat History */
+.text-display h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #555;
+}
+
+.text-content {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #2c3e50;
+}
+
+.highlight {
+  background: #f1c40f; /* 图中的黄色高亮 */
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+/* 对话记录区 (白色卡片) */
 .chat-history {
-  height: 180px;
+  flex: 1;
   background: #ffffff;
-  border-radius: 16px;
-  padding: 15px;
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #555;
+}
+
+.message-wrapper {
+  flex: 1;
   overflow-y: auto;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
 }
 
-/* Chat Messages */
-.chat-message {
+.lexi-label {
+  color: #8e44ad;
+  font-weight: bold;
   margin-bottom: 10px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  max-width: 85%;
-  word-wrap: break-word;
-}
-.chat-message.user {
-  background: #f0fdf4; /* 柔和绿色 */
-  color: #065f46;
-  align-self: flex-end;
-}
-.chat-message.ai {
-  background: #eff6ff; /* 柔和蓝 */
-  color: #1e40af;
-  align-self: flex-start;
+  display: block;
 }
 
-/* Action Buttons */
+.chat-message {
+  padding: 12px 20px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  max-width: 80%;
+  font-size: 15px;
+}
+
+.chat-message.user {
+  background: #dcdde1;
+  color: #2f3640;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.ai {
+  background: #57606f;
+  color: white;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* 底部操作按钮 */
 .action-buttons {
   display: flex;
   gap: 10px;
+  margin-top: 15px;
 }
+
 .action-buttons button {
   flex: 1;
-  padding: 12px;
+  padding: 10px;
+  border: 2px solid #8e44ad;
+  background: transparent;
+  color: #8e44ad;
   border-radius: 12px;
-  border: none;
-  font-size: 16px;
   cursor: pointer;
-  background: #2563eb; /* 高级蓝 */
-  color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-weight: 600;
+  transition: all 0.2s;
 }
+
 .action-buttons button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-/* Bottom Control Bar */
-.control-bar {
-  display: flex;
-  gap: 15px;
-  padding: 15px 20px;
-  background: #ffffff;
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
-}
-.control-bar button {
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  background: #e2e8f0; /* 灰色按钮 */
-  color: #1f2933;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.control-bar button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-.mock-btn {
-  background: #2563eb !important;
-  color: white !important;
-}
-
-/* Upload Drop Zone */
-.upload-drop-zone {
-  border: 2px dashed #cbd5e1;
-  border-radius: 16px;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-height: 150px;
-  overflow-y: auto;
-  background: #f8fafc;
-}
-.upload-drop-zone.dragover {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-
-/* Uploaded files */
-.uploaded-file {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 6px;
-  border-radius: 10px;
-  background: #f8fafc;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 5px;
-}
-.uploaded-file img {
-  max-height: 50px;
-  border-radius: 6px;
-}
-
-/* Smooth scroll */
-.text-display, .chat-history, .upload-drop-zone {
-  scroll-behavior: smooth;
+  background: #8e44ad;
+  color: white;
 }
