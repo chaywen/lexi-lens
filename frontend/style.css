@@ -68,18 +68,37 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;      /* 保证占满父容器高度 */
-  min-height: 0;     /* 防止内容撑开 flex 父容器 */
+  height: 100%;      /* 修复：占满父容器高度 */
+  min-height: 0;     /* 修复：防止内容撑开 */
+}
+
+.panel-title {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .text-display,
 .chat-history {
-  flex: 1 1 auto;    /* 保持原本的伸缩比例 */
-  min-height: 0;     /* 关键：防止内部内容撑开父容器 */
+  flex: 1 1 auto;    /* 保持伸缩比例 */
+  min-height: 0;     /* 修复：防止内部内容撑开父容器 */
   overflow-y: auto;  /* 保持滚动 */
 }
 
+.text-display {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px;
+  line-height: 1.6;
+}
 
+.chat-history {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .chat-message {
   padding: 12px 16px;
