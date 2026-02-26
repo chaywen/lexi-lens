@@ -1,162 +1,30 @@
-@@ -1,71 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LexiLens UI</title>
-
-  <!-- 🔐 CSP Security -->
-  <meta http-equiv="Content-Security-Policy"
-        content="
-        default-src 'self';
-        script-src 'self';
-        style-src 'self';
-        img-src 'self' data:;
-        media-src 'self' blob: data:;
-        connect-src 'self' ws://localhost:8080;
-        ">
-
   <link rel="stylesheet" href="style.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- 简化 CSP 允许 inline -->
-<meta http-equiv="Content-Security-Policy"
-content="default-src 'self' blob: data:; 
-script-src 'self' 'unsafe-inline'; 
-style-src 'self' 'unsafe-inline';">
-
-<title>LexiLens Phase 1</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: #f4f6f8;
-  color: #1f2933;
-}
-
-.main-layout {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 20px;
-  padding: 20px;
-  height: 100vh;
-  box-sizing: border-box;
-}
-
-.camera-inner {
-  background: rgba(0,0,0,0.6);
-  border-radius: 24px;
-  padding: 12px;
-  height: 100%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 20px;
-}
-
-.camera-overlay {
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  padding: 10px 14px;
-  border-radius: 16px;
-  border: none;
-  cursor: pointer;
-  background: #5b4fff;
-  color: white;
-}
-
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.text-display {
-  background: #fff7e6;
-  border-radius: 16px;
-  padding: 20px;
-  font-size: 18px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.chat-history {
-  background: white;
-  border-radius: 16px;
-  padding: 15px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.chat-message {
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  max-width: 70%;
-}
-
-.chat-message.ai {
-  background: #d8b4fe;
-}
-
-.chat-message.user {
-  background: #4b5563;
-  color: white;
-  margin-left: auto;
-}
-
-.control-bar {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-outline {
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  background: white;
-  cursor: pointer;
-}
-</style>
 </head>
-
 <body>
   <div id="app">
     <div class="main-layout">
-
       <!-- Camera Card -->
       <div class="camera-card">
         <div class="camera-inner">
-          <video id="video" autoplay muted playsinline></video>
-
+          <video id="video" autoplay muted></video>
           <div class="camera-overlay">
             <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
             <button id="snapshot-btn" class="btn">📸 Snapshot</button>
             <button id="upload-btn" class="btn">📄 Upload</button>
-            <input type="file" id="file-input" hidden>
+            <input type="file" id="file-input" style="display:none" multiple>
           </div>
         </div>
       </div>
 
       <!-- Right Panel -->
       <div class="right-panel">
-
+        <!-- Text Display Area -->
         <div class="text-display">
           <div class="panel-title">Text Display Area</div>
           <div id="reading-text">
@@ -164,132 +32,24 @@ body {
           </div>
         </div>
 
+        <!-- Chat Log Area -->
         <div class="chat-history">
           <div class="panel-title">Chat Log Area</div>
           <div id="chat-history">
-            <div class="chat-message ai">
-              Lexi: Hello! I am ready to read for you.
-            </div>
+            <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
           </div>
         </div>
 
+        <!-- Control Buttons -->
         <div class="control-bar">
           <button id="explain-btn" class="btn-outline">Explain Simply</button>
           <button id="stop-btn" class="btn-outline">Stop Reading</button>
           <button id="font-increase" class="btn-outline">A+</button>
           <button id="font-decrease" class="btn-outline">A-</button>
         </div>
-
       </div>
-
-<div class="main-layout">
-
-  <!-- Camera -->
-  <div class="camera-inner">
-    <video id="video" autoplay muted></video>
-    <div class="camera-overlay">
-      <button class="btn" onclick="toggleMic()">🎙 Mic</button>
-      <button class="btn" onclick="speakHello()">🔊 Test Voice</button>
     </div>
   </div>
-
-  <!-- Right Panel -->
-  <div class="right-panel">
-
-    <div class="text-display" id="reading-text">
-      Speak and your words will appear here...
-    </div>
-
-    <div class="chat-history" id="chat-history">
-      <div class="chat-message ai">Lexi: Hello! I am ready.</div>
-    </div>
-
-    <div class="control-bar">
-      <button class="btn-outline" onclick="increaseFont()">A+</button>
-      <button class="btn-outline" onclick="decreaseFont()">A-</button>
-    </div>
-
-  </div>
-</div>
-
-<script>
-let recognition;
-let isRecording = false;
-
-// 摄像头
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    document.getElementById("video").srcObject = stream;
-  });
-
-// 初始化语音识别
-function initSpeechRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert("Speech Recognition not supported. Use Chrome.");
-    return;
-  }
-
-  recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onresult = function(event) {
-    let transcript = "";
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
-    }
-    document.getElementById("reading-text").innerText = transcript;
-  };
-}
-
-initSpeechRecognition();
-
-// Mic 按钮
-function toggleMic() {
-  if (!isRecording) {
-    recognition.start();
-    isRecording = true;
-    addChat("Listening...", "user");
-  } else {
-    recognition.stop();
-    isRecording = false;
-  }
-}
-
-// 测试语音按钮
-function speakHello() {
-  const msg = "Hello, I am Lexi.";
-  const utter = new SpeechSynthesisUtterance(msg);
-  utter.rate = 0.9;
-  speechSynthesis.speak(utter);
-  addChat(msg, "ai");
-}
-
-// Chat
-function addChat(text, sender) {
-  const chat = document.getElementById("chat-history");
-  const div = document.createElement("div");
-  div.className = "chat-message " + sender;
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// 字体控制
-function increaseFont() {
-  const el = document.getElementById("reading-text");
-  let size = parseFloat(window.getComputedStyle(el).fontSize);
-  el.style.fontSize = (size + 2) + "px";
-}
-
-function decreaseFont() {
-  const el = document.getElementById("reading-text");
-  let size = parseFloat(window.getComputedStyle(el).fontSize);
-  if (size > 16) el.style.fontSize = (size - 2) + "px";
-}
-</script>
 
   <script src="script.js"></script>
 </body>
