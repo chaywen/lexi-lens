@@ -1,197 +1,130 @@
-/* 引入更高级的字体 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
+/* Reset & Base */
 body {
   margin: 0;
-  padding: 40px;
-  font-family: 'Inter', sans-serif;
-  /* 使用浅灰色背景，突出前方的半透明卡片 */
-  background: #f0f2f5; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f6f8;
+  color: #1f2933;
 }
 
-/* 主容器布局 */
+/* Main Layout */
 .main-layout {
   display: grid;
-  grid-template-columns: 560px 420px;
-  gap: 24px;
-  align-items: start;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
-/* ===== 左侧：深色半透明毛玻璃卡片 ===== */
+/* ===== Camera Card ===== */
 .camera-card {
-  background: rgba(58, 60, 66, 0.9); /* 半透明深色 */
-  backdrop-filter: blur(20px); /* 毛玻璃核心代码 */
-  border-radius: 32px;
-  padding: 24px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
+  background: #1e1e2f;
   border-radius: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 #video {
   width: 100%;
-  display: block;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
-.mode-badge {
+/* Overlay Buttons */
+.camera-overlay {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  background: #8e44ad;
-  color: white;
-  padding: 8px 16px;
+  bottom: 15px;
+  left: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 14px;
   border-radius: 12px;
-  font-weight: 600;
+  border: none;
   font-size: 14px;
-}
-
-.camera-title {
-  color: white;
-  font-size: 24px;
-  margin: 24px 0 16px 4px;
-  font-weight: 600;
-}
-
-/* 左侧底部按钮栏 */
-.control-bar {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-mic {
-  background: #8e44ad;
-  color: white;
-  width: 110px;
-  height: 60px;
-  border-radius: 30px;
-  border: none;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   cursor: pointer;
+  background: #5b4fff;
+  color: #fff;
+  transition: 0.2s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+.mic-btn {
+  background: #8b5cf6;
 }
 
-.btn-snapshot {
-  flex: 1;
-  background: #e1e1e3;
-  border-radius: 30px;
-  border: none;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 12px;
-  cursor: pointer;
-}
-
-.btn-snapshot strong { display: block; font-size: 15px; color: #1a1a1a; }
-.btn-snapshot small { display: block; font-size: 11px; color: #666; }
-
-.btn-icon-only {
-  background: #e1e1e3;
-  width: 65px;
-  height: 60px;
-  border-radius: 22px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ===== 右侧：浅色面板 ===== */
+/* ===== Right Panel ===== */
 .right-panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
-/* 文本区卡片 */
-.text-display-card {
-  background: #fdf6e9; /* 完全还原图中的米色 */
-  border-radius: 30px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+/* Text Display */
+.text-display {
+  background: #fefefe;
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 18px;
+  line-height: 1.6;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  flex: 1;
+  overflow-y: auto;
 }
 
-.text-display-card h3 { color: #333; margin-top: 0; font-size: 18px; }
-.text-content { font-size: 14px; line-height: 1.6; color: #4a4a4a; }
-.highlight { background: #fef041; padding: 0 2px; border-radius: 2px; }
-
-/* 聊天记录卡片 */
-.chat-log-card {
+/* Chat History */
+.chat-history {
   background: #ffffff;
-  border-radius: 30px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border-radius: 16px;
+  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-.chat-log-card h3 { color: #333; margin-top: 0; font-size: 18px; }
-.lexi-label { color: #8e44ad; font-weight: 700; margin-bottom: 12px; display: block; }
-
-/* 精致的对话气泡设计 */
-.bubble-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* Chat Messages */
+.chat-message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  max-width: 80%;
+  word-wrap: break-word;
 }
-
-.bubble {
-  position: relative;
-  padding: 12px 20px;
-  font-size: 14px;
-  max-width: 85%;
-  line-height: 1.4;
-}
-
-/* 紫色气泡 (用户/右边) */
-.bubble.purple {
-  background: #d6d1f0;
-  color: #333;
-  border-radius: 18px 18px 4px 18px;
+.chat-message.user {
+  background: #ede9fe;
+  color: #5b21b6;
   align-self: flex-end;
 }
-
-/* 黑色/深灰气泡 (AI/左边) */
-.bubble.dark {
-  background: #4a4d54;
-  color: white;
-  border-radius: 18px 18px 18px 4px;
+.chat-message.ai {
+  background: #f3f4f6;
+  color: #111827;
   align-self: flex-start;
 }
 
-/* 对话框底部的按钮 */
-.action-footer {
+/* Control Bar Buttons */
+.control-bar {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
 }
-
-.action-footer button {
-  flex: 1;
-  background: white;
-  border: 1.5px solid #8e44ad;
-  color: #8e44ad;
-  padding: 8px;
+.btn-outline {
+  padding: 8px 12px;
   border-radius: 12px;
-  font-weight: 600;
-  font-size: 13px;
+  border: 1px solid #cbd5e1;
+  background: #f9fafb;
+  color: #1f2933;
   cursor: pointer;
+  font-size: 14px;
   transition: 0.2s;
 }
-
-.action-footer button:hover {
-  background: #f4ecf7;
+.btn-outline:hover {
+  background: #f3f4f6;
 }
