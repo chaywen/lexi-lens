@@ -38,6 +38,14 @@ function setupEvents() {
 
   document.getElementById("font-increase")?.addEventListener("click", increaseFont);
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
+
+  // Drag & Drop
+  const dropZone = document.getElementById("uploaded-files");
+  dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+  dropZone.addEventListener("dragleave", (e) => { dropZone.classList.remove("dragover"); });
+  dropZone.addEventListener("drop", (e) => { e.preventDefault(); dropZone.classList.remove("dragover"); handleUpload(e.dataTransfer.files); });
+
+  document.getElementById("file-input").addEventListener("change", (e) => handleUpload(e.target.files));
 }
 
 // ===== MIC =====
@@ -94,7 +102,7 @@ function explainSimply() {
 
 // ===== CHAT =====
 function addChat(text, sender) {
-  const chatArea = document.getElementById("chat-history"); // 对应右侧聊天区域
+  const chatArea = document.getElementById("chat-history");
   const div = document.createElement("div");
   div.className = `chat-message ${sender}`;
   div.textContent = text;
@@ -114,5 +122,26 @@ function decreaseFont() {
   let size = parseFloat(window.getComputedStyle(el).fontSize);
   if (size > 16) {
     el.style.fontSize = size - 2 + "px";
+  }
+}
+
+// ===== FILE UPLOAD =====
+function handleUpload(files) {
+  const uploadedArea = document.getElementById("uploaded-files");
+  for (const file of files) {
+    const allowed = ['application/pdf','image/png','image/jpeg','image/webp'];
+    if (!allowed.includes(file.type)) { alert("Only PDF/PNG/JPG/WEBP allowed"); continue; }
+
+    const div = document.createElement("div");
+    div.className = "uploaded-file";
+    div.textContent = file.name;
+
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      div.appendChild(img);
+    }
+
+    uploadedArea.appendChild(div);
   }
 }
