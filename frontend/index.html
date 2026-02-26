@@ -3,65 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ws: wss:;">
-  <title>LexiLens Phase 1 Demo</title>
+
+  <!-- CSP -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 script-src 'self';
+                 style-src 'self';
+                 img-src 'self' data: blob:;
+                 media-src 'self' blob:;
+                 connect-src 'self' ws: wss:;">
+
+  <title>LexiLens</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Mode Selector Overlay -->
-  <div id="mode-selector-overlay" class="mode-selector-overlay">
-    <div class="mode-selector-content">
-      <h2>Choose a Mode</h2>
-      <div class="mode-buttons">
-        <button class="mode-btn" data-mode="book">📖 Book Reading</button>
-        <button class="mode-btn" data-mode="form">📋 Form Filling</button>
-        <button class="mode-btn" data-mode="study">🎓 Study Mode</button>
-        <button class="mode-btn" data-mode="write">✍️ Writing</button>
-      </div>
+
+<div id="app">
+
+  <!-- CAMERA -->
+  <div class="camera-container">
+    <video id="video" autoplay playsinline></video>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <button id="mic-btn">🎙 Mic</button>
+    <button id="snapshot-btn">📸 Snapshot</button>
+    <button id="upload-btn">📄 Upload</button>
+    <button id="mock-btn" class="mock">🧪 Mock</button>
+  </div>
+
+  <!-- TEXT DISPLAY -->
+  <div id="text-display">
+    <div id="document-text">
+      Point camera or upload a document to begin reading.
     </div>
   </div>
 
-  <!-- Main App -->
-  <div id="app">
-    <!-- Camera Panel -->
-    <div class="camera-panel">
-      <video id="video" playsinline autoplay></video>
+  <!-- CHAT AREA -->
+  <div id="chat-area"></div>
 
-      <!-- 浮动条 -->
-      <div class="floating-bar">
-        <button id="mic-btn">🎤 Mic</button>
-        <div class="subtitle-area" id="subtitle-area">Listening...</div>
-        <div class="voice-visualizer" id="visualizer">
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-        </div>
-        <button id="mode-switch-btn">⚙️ Mode</button>
-        <button id="snapshot-btn">📸 Snapshot</button>
-      </div>
+  <!-- CONTROL BUTTONS -->
+  <div class="controls">
+    <button id="explain-btn">Explain Simply</button>
+    <button id="stop-btn">Stop Reading</button>
 
-      <!-- Mock Response 按钮 -->
-      <div style="margin-top: 15px; text-align: center;">
-        <button id="mock-btn" style="padding: 10px 20px; font-size: 16px; background:#117A65; color:white; border:none; border-radius:6px; cursor:pointer;">
-          Play Mock Response
-        </button>
-      </div>
-    </div>
-
-    <!-- Document Panel -->
-    <div class="document-panel">
-      <h3>Documents & Transcription</h3>
-      <div id="drop-zone">
-        <div>📄 Drag & drop PDF or image here</div>
-        <div style="font-size: 14px; color: #666;">or click to browse</div>
-      </div>
-      <input type="file" id="file-input" accept=".pdf,image/*">
+    <div class="font-controls">
+      <button id="font-decrease">A−</button>
+      <button id="font-increase">A+</button>
     </div>
   </div>
 
-  <!-- 外部 JS 文件 -->
-  <script src="script.js"></script>
+  <input type="file" id="file-input" accept=".pdf,image/*" hidden>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
