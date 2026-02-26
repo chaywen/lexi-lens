@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced UI Demo</title>
+  <title>LexiLens UI</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,12 +11,14 @@
     <div class="main-layout">
       <!-- Camera Card -->
       <div class="camera-card">
-        <video id="video" autoplay muted></video>
-        <div class="camera-overlay">
-          <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
-          <button id="snapshot-btn" class="btn">📸 Snapshot</button>
-          <button id="upload-btn" class="btn">📄 Upload</button>
-          <input type="file" id="file-input" style="display:none" multiple>
+        <div class="camera-inner">
+          <video id="video" autoplay muted></video>
+          <div class="camera-overlay">
+            <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
+            <button id="snapshot-btn" class="btn">📸 Snapshot</button>
+            <button id="upload-btn" class="btn">📄 Upload</button>
+            <input type="file" id="file-input" style="display:none" multiple>
+          </div>
         </div>
       </div>
 
