@@ -29,12 +29,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  max-height: 300px;
 }
 
 #video {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 关键：不裁剪，只缩放 */
+  object-fit: contain;
 }
 
 /* ===== Right Panel ===== */
@@ -70,13 +71,8 @@ body {
   margin-bottom: 8px;
 }
 
-.chat-message.ai {
-  color: #0f766e;
-}
-
-.chat-message.user {
-  color: #334155;
-}
+.chat-message.ai { color: #0f766e; }
+.chat-message.user { color: #334155; }
 
 /* Action Buttons */
 .action-buttons {
@@ -96,9 +92,7 @@ body {
   transition: 0.2s;
 }
 
-.action-buttons button:hover {
-  background: #0e6655;
-}
+.action-buttons button:hover { background: #0e6655; }
 
 /* Bottom Control Bar */
 .control-bar {
@@ -118,11 +112,30 @@ body {
   background: #e2e8f0;
 }
 
-.control-bar button:hover {
-  background: #cbd5e1;
+.control-bar button:hover { background: #cbd5e1; }
+.mock-btn { background: #117a65 !important; color: white !important; }
+
+/* ===== Upload Drop Zone ===== */
+.upload-drop-zone {
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
-.mock-btn {
-  background: #117a65 !important;
-  color: white !important;
+.upload-drop-zone.dragover { background: #e0f2f1; border-color: #0f766e; }
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+.uploaded-file img { max-height: 50px; border-radius: 6px; }
