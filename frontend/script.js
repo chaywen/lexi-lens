@@ -140,11 +140,6 @@ function addChat(text, sender) {
   div.className = `chat-message ${sender}`;
   div.textContent = text;
   chatArea.appendChild(div);
-
-  // 修复：限制 chat-area 最大高度，不撑破右侧面板
-  chatArea.style.maxHeight = chatArea.parentElement.clientHeight + "px";
-
-  // 滚动到底部
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
