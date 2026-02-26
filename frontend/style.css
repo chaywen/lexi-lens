@@ -68,8 +68,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;      /* 修复：占满父容器高度 */
-  min-height: 0;     /* 修复：防止内容撑开 */
+  height: 100%;       /* 修复：占满父容器高度 */
+  max-height: 100%;   /* 修复：防止超出父容器 */
+  min-height: 0;      /* 修复 flex 内容撑开问题 */
 }
 
 .panel-title {
@@ -79,7 +80,7 @@ body {
 
 .text-display,
 .chat-history {
-  flex: 1 1 auto;    /* 保持伸缩比例 */
+  flex: 1 1 0;       /* 保持伸缩比例 */
   min-height: 0;     /* 修复：防止内部内容撑开父容器 */
   overflow-y: auto;  /* 保持滚动 */
 }
