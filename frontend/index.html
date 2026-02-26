@@ -25,28 +25,30 @@
   <div id="app">
     <!-- Camera Panel -->
     <div class="camera-panel">
-      <video id="video" playsinline autoplay></video>
-      <div class="floating-bar">
-        <button id="mic-btn">🎤 Mic</button>
-        <div class="subtitle-area" id="subtitle-area">Listening...</div>
-        <div class="voice-visualizer" id="visualizer">
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-        </div>
-        <button id="mode-switch-btn">⚙️ Mode</button>
-        <button id="snapshot-btn">📸 Snapshot</button>
-      </div>
+  <video id="video" playsinline autoplay></video>
 
-      <!-- ✅ 新增 Play Mock Response 按钮 -->
-      <div style="margin-top: 15px; text-align: center;">
-        <button id="mock-btn" style="padding: 10px 20px; font-size: 16px; background:#117A65; color:white; border:none; border-radius:6px; cursor:pointer;">
-          Play Mock Response
-        </button>
-      </div>
+  <!-- 浮动条 -->
+  <div class="floating-bar">
+    <button id="mic-btn">🎤 Mic</button>
+    <div class="subtitle-area" id="subtitle-area">Listening...</div>
+    <div class="voice-visualizer" id="visualizer">
+      <div class="visualizer-bar"></div>
+      <div class="visualizer-bar"></div>
+      <div class="visualizer-bar"></div>
+      <div class="visualizer-bar"></div>
+      <div class="visualizer-bar"></div>
     </div>
+    <button id="mode-switch-btn">⚙️ Mode</button>
+    <button id="snapshot-btn">📸 Snapshot</button>
+  </div>
+
+  <!-- ✅ 这里就是 Mock Response 按钮 -->
+  <div style="margin-top: 15px; text-align: center;">
+    <button id="mock-btn" style="padding: 10px 20px; font-size: 16px; background:#117A65; color:white; border:none; border-radius:6px; cursor:pointer;">
+      Play Mock Response
+    </button>
+  </div>
+</div>
 
     <!-- Document Panel -->
     <div class="document-panel">
@@ -69,10 +71,16 @@
 
     // 播放假回应
     const mockBtn = document.getElementById("mock-btn");
-    mockBtn.addEventListener("click", () => {
+
+  mockBtn.addEventListener("click", () => {
+    console.log("Mock button clicked"); // 测试是否触发
+    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance("Hello! I am Lexi.");
       speechSynthesis.speak(utterance);
-    });
+    } else {
+      alert("Your browser does not support SpeechSynthesis API");
+    }
+  });
 
     // 可选：mode 按钮点击也能播声音（模拟不同模式）
     document.querySelectorAll(".mode-btn").forEach(btn => {
