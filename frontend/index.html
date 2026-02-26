@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LexiLens UI Test</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced UI Demo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-  <div class="main-layout">
-    <!-- Camera -->
-    <div class="camera-container">
-      <video id="video" autoplay muted></video>
-    </div>
-
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <div id="reading-text" class="text-display">Text will appear here...</div>
-      <div id="chat-history" class="chat-history"></div>
-
-      <!-- Uploaded Files Area -->
-      <div id="uploaded-files" class="upload-drop-zone">
-        Drag & Drop files here or click Upload
+  <div id="app">
+    <div class="main-layout">
+      <!-- Camera Card -->
+      <div class="camera-card">
+        <video id="video" autoplay muted></video>
+        <div class="camera-overlay">
+          <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
+          <button id="snapshot-btn" class="btn">📸 Snapshot</button>
+          <button id="upload-btn" class="btn">📄 Upload</button>
+          <input type="file" id="file-input" style="display:none" multiple>
+        </div>
       </div>
 
-      <div class="action-buttons">
-        <button id="explain-btn">Explain Simply</button>
-        <button id="stop-btn">Stop Reading</button>
+      <!-- Right Panel -->
+      <div class="right-panel">
+        <!-- Text Display Area -->
+        <div class="text-display" id="reading-text">
+          <p>Text Display Area: The recognized text will appear here.</p>
+        </div>
+
+        <!-- Chat Log Area -->
+        <div class="chat-history" id="chat-history">
+          <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-bar">
+          <button id="explain-btn" class="btn-outline">Explain Simply</button>
+          <button id="stop-btn" class="btn-outline">Stop Reading</button>
+          <button id="font-increase" class="btn-outline">A+</button>
+          <button id="font-decrease" class="btn-outline">A-</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Control Bar -->
-  <div class="control-bar">
-    <button id="mic-btn">🎙 Mic</button>
-    <button id="snapshot-btn">📸 Snapshot</button>
-    <button id="upload-btn">📄 Upload</button>
-    <input type="file" id="file-input" multiple style="display:none">
-    <button id="mock-btn" class="mock-btn">Play Mock</button>
-    <button id="font-increase">A+</button>
-    <button id="font-decrease">A-</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
