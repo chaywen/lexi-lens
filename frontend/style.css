@@ -13,19 +13,27 @@ body {
 
 /* App layout */
 #app { display:flex; height:100vh; gap:20px; padding:20px; }
-.camera-panel, .document-panel {
+/* Camera panel 保证按钮不会被挤下去 */
+.camera-panel {
   flex:1;
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  align-items:center;
+  justify-content:flex-start; /* 视频在上，按钮在下 */
+  min-height:400px; /* 保证足够高 */
+  padding:16px;
 }
 
-/* Video */
-#video { flex:1; width:100%; object-fit:cover; background:#000; }
-
+/* 视频自适应 */
+#video {
+  flex:1;
+  width:100%;
+  max-height:400px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:16px;
+  background:#000;
+}
 /* Floating bar */
 .floating-bar {
   background:#fff; padding:16px;
