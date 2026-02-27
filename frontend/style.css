@@ -91,7 +91,7 @@ body {
 .panel-title {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .text-display {
@@ -111,6 +111,7 @@ body {
   background: #ffffff;
   border-radius: 16px;
   padding: 15px 6px 15px 15px; /* 右边靠近滚动条 */
+  padding-top: 6px; /* 或者更大，比如10px */
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -122,6 +123,7 @@ body {
 
 /* ================= CHAT MESSAGES BASE ================= */
 .chat-message {
+    margin: 0; /* ✅ 确保没有额外外边距 */
   padding: 8px 12px;          /* ✅ 内边距更紧凑 */
   border-radius: 14px;        /* ✅ 圆角小一点 */
   max-width: 50%;             /* ✅ bubble 小一点 */
