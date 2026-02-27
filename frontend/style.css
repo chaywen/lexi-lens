@@ -106,7 +106,6 @@ body {
   flex-direction: column;
   overflow-y: auto;
 }
-
 /* ================= CHAT HISTORY ================= */
 .chat-history {
   background: #ffffff;
@@ -116,16 +115,16 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;          /* 消息间距更自然 */
-  min-height: 0;      /* 修复 flex 高度 */
-  scroll-behavior: smooth;  /* 平滑滚动 */
+  gap: 20px;          /* ✅ 增加消息间距 */
+  min-height: 0;      
+  scroll-behavior: smooth;  
 }
 
 /* ================= CHAT MESSAGES BASE ================= */
 .chat-message {
-  padding: 10px 14px;          /* 内边距紧凑 */
-  border-radius: 28px;         /* 圆润 */
-  max-width: 60%;              /* 不占满太多 */
+  padding: 8px 12px;          /* ✅ 内边距更紧凑 */
+  border-radius: 14px;        /* ✅ 圆角小一点 */
+  max-width: 55%;             /* ✅ bubble 小一点 */
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
@@ -140,32 +139,32 @@ body {
   background: linear-gradient(135deg, #d8b4fe 0%, #f3e8ff 100%);
   color: #1f2933;
   box-shadow:
-    inset 0 1px 2px rgba(255,255,255,0.3),  /* 内阴影 */
-    0 4px 12px rgba(0,0,0,0.12);            /* 外阴影 */
+    inset 0 1px 2px rgba(255,255,255,0.3),  
+    0 3px 10px rgba(0,0,0,0.1);            
 }
 
 /* ================= USER BUBBLE (右) ================= */
 .chat-message.user {
   align-self: flex-end;
   margin-left: auto;
-  background: rgba(75,85,99,0.2);             /* 半透明灰 */
+  background: rgba(75,85,99,0.2);             
   color: #1f2933;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   box-shadow:
     inset 0 1px 2px rgba(255,255,255,0.2),
-    0 4px 12px rgba(0,0,0,0.12);
+    0 3px 10px rgba(0,0,0,0.1);
 }
 
 /* ================= HOVER EFFECT ================= */
 .chat-message:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* ================= FADE-IN ANIMATION ================= */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -183,7 +182,6 @@ body {
   background: #ffd54f;
   border-radius: 4px;
 }
-
 
 /* ================= CONTROL BAR ================= */
 .control-bar {
