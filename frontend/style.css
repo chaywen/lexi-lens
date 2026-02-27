@@ -86,7 +86,7 @@ body {
   flex-direction: column;
   gap: 12px;
   min-height: 0; /* 防止撑开 */
-  padding-top: 10px; /* ✅ 新增，让标题和上方有空隙 */
+  padding-top: 16px; /* ✅ 新增，让标题和上方有空隙 */
 
 }
 
@@ -135,8 +135,8 @@ body {
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
   /* ✅ 新增 */
-    margin-top: 10px; 
-    margin-bottom: 10px; 
+    margin-top: 12px; 
+    margin-bottom: 12px; 
 }
 
 /* ================= AI BUBBLE (左) ================= */
