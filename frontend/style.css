@@ -227,10 +227,6 @@ body {
 }
 
 .text-display::-webkit-scrollbar-thumb,
-.chat-history::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 4px;
-}
 
 .mode-wrapper {
   position: relative;
