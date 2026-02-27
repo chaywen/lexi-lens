@@ -2,6 +2,21 @@ const CONFIG = {
   WS_URL: "ws://localhost:8080/ws/session",
   API_URL: "http://localhost:8080"
 };
+const ALLOWED_TYPES = ['application/pdf','image/png','image/jpeg','image/webp'];
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+// ===== Phase 2新增 =====
+const SESSION_TOKEN = crypto.randomUUID(); // 每次刷新生成唯一 token
+
+// 所有 WS 消息必须用这个发送
+function sendMessage(type, payload = {}) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  ws.send(JSON.stringify({
+    type,
+    session_token: SESSION_TOKEN,
+    ...payload
+  }));
+}
 
 let isRecording = false;
 let mediaRecorder = null;
@@ -45,12 +60,7 @@ function setupEvents() {
 
   document.getElementById("mode-dropdown").style.display = "none";
 
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({
-      type: "mode",
-      mode: mode
-    }));
-  }
+  sendMessage("mode", { mode: mode });
 
   renderMockTextForMode(mode);
 });
@@ -82,8 +92,8 @@ btn.style.transform = `scale(${1 + rms * 0.6})`;
     updateMicAnimation();
 
     mediaRecorder.ondataavailable = (event) => {
-      if (ws && ws.readyState === WebSocket.OPEN) ws.send(event.data);
-    };
+      sendMessage("audio_chunk", { data: event.data });
+    };;
 
     mediaRecorder.start(500);
     isRecording = true;
@@ -112,10 +122,13 @@ function takeSnapshot() {
   canvas.getContext("2d").drawImage(video, 0, 0);
 
   canvas.toBlob((blob) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(blob);
-    }
-  }, "image/jpeg");
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    const base64Frame = reader.result;
+    sendMessage("snapshot", { frame: base64Frame });
+  };
+  reader.readAsDataURL(blob);
+}, "image/jpeg");
 
   addChat("Snapshot sent.", "user");
 }
@@ -123,7 +136,23 @@ function takeSnapshot() {
 function handleUpload(event) {
   const files = event.target.files;
   for (let f of files) {
+    if (!validateFile(f)) continue; // 阻止无效文件
     addChat(`Uploaded: ${f.name}`, "user");
+
+    // 上传到后端
+    const formData = new FormData();
+    formData.append('file', f);
+
+    fetch(CONFIG.API_URL + '/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      // data.words = ["word1","word2",...]
+      renderMockTextFromArray(data.words);
+    })
+    .catch(err => console.error("Upload error:", err));
   }
 }
 
@@ -190,6 +219,11 @@ function renderMockText() {
     span.dataset.index = index;
     container.appendChild(span);
   });
+}
+function renderMockTextFromArray(words) {
+  mockWords = words;
+  currentWord = 0;
+  renderMockText();
 }
 function renderMockTextForMode(mode) {
   let words;
@@ -269,6 +303,16 @@ function initWebSocket() {
     console.log("WebSocket closed");
   };
 }
-
+function validateFile(file) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    addChat('Only PDF, PNG, JPG, WEBP files allowed.', 'user');
+    return false;
+  }
+  if (file.size > MAX_SIZE) {
+    addChat('File too large. Max 10MB.', 'user');
+    return false;
+  }
+  return true;
+}
 setInterval(highlightLoop, 800);
 renderMockText();
