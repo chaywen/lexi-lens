@@ -142,8 +142,7 @@ function addChat(text, sender) {
 
   chatArea.appendChild(div);
 
-  // 自动平滑滚动到底部
-    // ✅ 自动滚动到底部
+  // 自动滚动到底部
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
