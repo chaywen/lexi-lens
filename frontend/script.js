@@ -121,40 +121,18 @@ function takeSnapshot() {
 
   canvas.getContext("2d").drawImage(video, 0, 0);
 
-  const snapshotThumb = document.getElementById("snapshot-thumb");
-  const snapshotImg = document.getElementById("snapshot-img");
-
   canvas.toBlob((blob) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64Frame = reader.result;
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    const base64Frame = reader.result;
+    sendMessage("snapshot", { frame: base64Frame });
+  };
+  reader.readAsDataURL(blob);
+}, "image/jpeg");
 
-      // 显示缩略图
-      snapshotImg.src = base64Frame;
-      snapshotThumb.style.display = "block";
-
-      // 模拟文字识别逻辑
-      // 假设这里是后端返回的文字
-      // 如果文字为空，则显示提示
-      let recognizedText = ""; // 模拟没有文字
-      // recognizedText = "Detected text here."; // 模拟有文字
-
-      const readingText = document.getElementById("reading-text");
-      if (recognizedText.trim() === "") {
-        readingText.innerHTML = `<p style="color: gray;">No text detected in snapshot.</p>`;
-      } else {
-        readingText.innerHTML = `<p>${recognizedText}</p>`;
-      }
-
-      // Chat log 提示
-      addChat("Snapshot taken and text displayed.", "user");
-
-      // Phase2 正式用，发送 WS 消息
-      sendMessage("snapshot", { frame: base64Frame });
-    };
-    reader.readAsDataURL(blob);
-  }, "image/jpeg");
+  addChat("Snapshot sent.", "user");
 }
+
 function handleUpload(event) {
   const files = event.target.files;
   for (let f of files) {
