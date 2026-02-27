@@ -121,31 +121,39 @@ body {
   scroll-behavior: smooth; /* 平滑滚动 */
 }
 
-/* ================= CHAT MESSAGES ================= */
+/* ===== Chat Messages Base ===== */
 .chat-message {
-  padding: 12px 16px;
-  border-radius: 20px; /* 全圆角 */
-  max-width: 70%;
+  padding: 10px 14px;           /* 略小的 padding，让 bubble 更紧凑 */
+  border-radius: 24px;          /* 完全圆角 */
+  max-width: 65%;               /* 比之前小一点，避免过宽 */
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.4;
   word-wrap: break-word;
   animation: fadeIn 0.25s ease;
+  margin-bottom: 14px;          /* ✅ 增加每条消息间距 */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* subtle shadow 高级感 */
 }
 
-/* AI Bubble - 靠左 */
+/* ===== AI Bubble (左) ===== */
 .chat-message.ai {
-  background: #d8b4fe;
-  color: #1f2933;
   align-self: flex-start;
-  margin-right: auto; /* 避免居中，多余空间在右边 */
+  margin-right: auto; 
+  background: linear-gradient(135deg, #d8b4fe 0%, #f3e8ff 100%); /* 紫白渐变 */
+  color: #1f2933;
 }
 
-/* User Bubble - 靠右并缩进 */
+/* ===== User Bubble (右) ===== */
 .chat-message.user {
-  background: #4b5563;
-  color: #ffffff;
   align-self: flex-end;
-  margin-left: auto; /* 避免居中，多余空间在左边 */
+  margin-left: auto;
+  background: rgba(75,85,99,0.15); /* 半透明灰色 */
+  color: #1f2933;
+}
+
+/* ================= FADE-IN ANIMATION ================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ================= FADE-IN ANIMATION ================= */
