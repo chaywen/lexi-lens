@@ -75,9 +75,31 @@ body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.35);
 }
 
-.mic-btn {
+.mic.mic-btn {
   background: rgba(17,122,101,0.6);
   border: 1px solid rgba(255,255,255,0.25);
+  position: relative;
+  overflow: hidden; /* 容器限制波纹 */
+}
+
+.mic-btn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: pulse 1s infinite;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% { transform: translateX(-50%) scaleY(1); opacity: 0.3; }
+  50% { transform: translateX(-50%) scaleY(2.5); opacity: 0.8; }
+  100% { transform: translateX(-50%) scaleY(1); opacity: 0.3; }
 }
 
 /* ================= RIGHT PANEL ================= */
@@ -93,7 +115,7 @@ body {
 .panel-title {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 0;
+  margin-bottom: 12px;
 }
 
 .text-display {
@@ -112,31 +134,35 @@ body {
 .chat-history {
   background: #ffffff;
   border-radius: 16px;
-  padding: 15px 6px 15px 15px; /* 右边靠近滚动条 */
+  padding: 15px 6px 15px 15px;
+  display: flex;             /* ✅ 新增 flex */
+  flex-direction: column;    /* ✅ 垂直排列标题+消息区 */
   flex: 1;
+  min-height: 0;             /* ✅ 必须，否则 flex 子元素无法收缩 */
+  overflow: hidden;          /* ✅ 防止内容超出 */
+}
+
+.chat-scroll {
+  flex: 1;                   /* 占满剩余空间 */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;          /* ✅ 增加消息间距 */
-  min-height: 0;      
-  scroll-behavior: smooth;  
+  gap: 12px;
+  scroll-behavior: smooth;
 }
 
 /* ================= CHAT MESSAGES BASE ================= */
 .chat-message {
-  margin: 0; /* ✅ 确保没有额外外边距 */
-  padding: 8px 12px;          /* ✅ 内边距更紧凑 */
-  border-radius: 14px;        /* ✅ 圆角小一点 */
-  max-width: 60%;             /* ✅ bubble 小一点 */
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 58%;
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
   animation: fadeIn 0.25s ease;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
-  /* ✅ 新增 */
-    margin-top: 0; 
-    margin-bottom: 0; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 0;   /* 保持0，让gap控制间距 */
 }
 
 /* ================= AI BUBBLE (左) ================= */
@@ -186,6 +212,7 @@ body {
   border-radius: 4px;
 }
 
+
 /* ================= ACTIVE WORD HIGHLIGHT ================= */
 .active-word {
   background: #ffd54f;
@@ -220,13 +247,31 @@ body {
 }
 
 .text-display::-webkit-scrollbar-thumb,
-.chat-history::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 4px;
+
+.mode-wrapper {
+  position: relative;
 }
 
-/* ================= ACTIVE WORD HIGHLIGHT ================= */
-.active-word {
-  background: #ffd54f;
-  border-radius: 4px;
+.mode-dropdown {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 8px 0;
+  display: none;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+.mode-dropdown div {
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.mode-dropdown div:hover {
+  background: rgba(255,255,255,0.15);
 }
