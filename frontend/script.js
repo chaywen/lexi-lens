@@ -155,7 +155,29 @@ function renderMockText() {
     container.appendChild(span);
   });
 }
+function renderMockTextForMode(mode) {
+  let words;
 
+  if (mode === "book") {
+    words = ["This","is","book","mode","reading","example"];
+  }
+
+  if (mode === "form") {
+    words = ["Please","fill","out","this","form","carefully"];
+  }
+
+  if (mode === "study") {
+    words = ["Study","mode","helps","you","learn","faster"];
+  }
+
+  if (mode === "write") {
+    words = ["Write","mode","assists","your","creativity"];
+  }
+
+  mockWords = words;
+  currentWord = 0;
+  renderMockText();
+}
 function highlightLoop() {
   const spans = document.querySelectorAll("#reading-text span");
   spans.forEach(s => s.classList.remove("active-word"));
@@ -194,6 +216,9 @@ function initWebSocket() {
       if (parsed.type === "highlight") {
         highlightWord(parsed.index);
       }
+      if (parsed.type === "mode") {
+  renderMockTextForMode(parsed.mode);
+}
 
     } catch {
       console.log("Non-JSON message:", data);
