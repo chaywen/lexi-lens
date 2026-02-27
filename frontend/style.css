@@ -186,6 +186,7 @@ body {
   border-radius: 4px;
 }
 
+
 /* ================= ACTIVE WORD HIGHLIGHT ================= */
 .active-word {
   background: #ffd54f;
@@ -225,8 +226,3 @@ body {
   border-radius: 4px;
 }
 
-/* ================= ACTIVE WORD HIGHLIGHT ================= */
-.active-word {
-  background: #ffd54f;
-  border-radius: 4px;
-}
