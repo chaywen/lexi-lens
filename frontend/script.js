@@ -240,30 +240,22 @@ function highlightWord(index) {
     spans[index].classList.add("active-word");
   }
 }
+
 function initWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
   ws.onopen = () => {
     console.log("WebSocket connected");
+    addChat("WebSocket connected.", "ai");
   };
 
   ws.onmessage = (event) => {
     const data = event.data;
-
     try {
       const parsed = JSON.parse(data);
-
-      if (parsed.type === "text") {
-        addChat(parsed.message, "ai");
-      }
-
-      if (parsed.type === "highlight") {
-        highlightWord(parsed.index);
-      }
-      if (parsed.type === "mode") {
-  renderMockTextForMode(parsed.mode);
-}
-
+      if (parsed.type === "text") addChat(parsed.message, "ai");
+      if (parsed.type === "highlight") highlightWord(parsed.index);
+      if (parsed.type === "mode") renderMockTextForMode(parsed.mode);
     } catch {
       console.log("Non-JSON message:", data);
     }
@@ -274,9 +266,10 @@ function initWebSocket() {
   };
 
   ws.onclose = () => {
-    console.log("WebSocket closed");
+    console.log("WebSocket closed, retrying in 2s...");
+    addChat("WebSocket disconnected. Reconnecting...", "ai");
+    setTimeout(initWebSocket, 2000); // 2 秒后重连
   };
 }
-
 setInterval(highlightLoop, 800);
 renderMockText();
