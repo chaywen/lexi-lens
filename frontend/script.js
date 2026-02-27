@@ -37,7 +37,6 @@ function setupEvents() {
   document.getElementById("font-increase")?.addEventListener("click", increaseFont);
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
 }
-
 async function toggleMic() {
   if (!isRecording) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -49,16 +48,18 @@ async function toggleMic() {
       }
     };
 
-    mediaRecorder.start(500); // 每500ms发送一次音频
+    mediaRecorder.start(500);
     isRecording = true;
     addChat("Listening...", "user");
 
   } else {
     mediaRecorder.stop();
+
+    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+
     isRecording = false;
   }
 }
-
 function testVoice() {
   const msg = "Hello, I am Lexi.";
   speak(msg);
@@ -223,4 +224,3 @@ document.addEventListener("click", (e) => {
   }
 });
 renderMockText();
-setInterval(highlightLoop, 800);
