@@ -127,7 +127,7 @@ body {
   margin: 0; /* ✅ 确保没有额外外边距 */
   padding: 8px 12px;          /* ✅ 内边距更紧凑 */
   border-radius: 14px;        /* ✅ 圆角小一点 */
-  max-width: 55%;             /* ✅ bubble 小一点 */
+  max-width: 60%;             /* ✅ bubble 小一点 */
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
@@ -135,8 +135,8 @@ body {
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
   /* ✅ 新增 */
-    margin-top: 12px; 
-    margin-bottom: 12px; 
+    margin-top: 11px; 
+    margin-bottom: 11px; 
 }
 
 /* ================= AI BUBBLE (左) ================= */
