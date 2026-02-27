@@ -39,6 +39,21 @@ function setupEvents() {
   document.getElementById("stop-btn")?.addEventListener("click", stopSpeech);
   document.getElementById("explain-btn")?.addEventListener("click", explainSimply);
   document.getElementById("font-increase")?.addEventListener("click", increaseFont);
+  document.getElementById("mode-dropdown").addEventListener("click", (e) => {
+  const mode = e.target.dataset.mode;
+  if (!mode) return;
+
+  document.getElementById("mode-dropdown").style.display = "none";
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: "mode",
+      mode: mode
+    }));
+  }
+
+  renderMockTextForMode(mode);
+});
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
 }
 async function toggleMic() {
@@ -237,20 +252,6 @@ function initWebSocket() {
     console.log("WebSocket closed");
   };
 }
-document.getElementById("mode-dropdown").addEventListener("click", (e) => {
-  const mode = e.target.dataset.mode;
-  if (!mode) return;
 
-  document.getElementById("mode-dropdown").style.display = "none";
-
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({
-      type: "mode",
-      mode: mode
-    }));
-  }
-
-  renderMockTextForMode(mode);
-});
 setInterval(highlightLoop, 800);
 renderMockText();
