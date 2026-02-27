@@ -86,7 +86,7 @@ body {
   flex-direction: column;
   gap: 12px;
   min-height: 0; /* 防止撑开 */
-  padding-top: 32px; /* ✅ 新增，让标题和上方有空隙 */
+  padding-top: 45px; /* ✅ 新增，让标题和上方有空隙 */
 
 }
 
