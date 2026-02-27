@@ -186,7 +186,13 @@ body {
   border-radius: 4px;
 }
 
-
+.chat-history {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 15px 6px 15px 15px;
+  flex: 1;
+  min-height: 0;
+}
 /* ================= ACTIVE WORD HIGHLIGHT ================= */
 .active-word {
   background: #ffd54f;
