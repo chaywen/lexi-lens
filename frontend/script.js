@@ -6,10 +6,12 @@ const CONFIG = {
 let isRecording = false;
 let mediaRecorder = null;
 let videoStream = null;
+let ws = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   initCamera();
   setupEvents();
+  initWebSocket();
 });
 
 async function initCamera() {
@@ -40,9 +42,17 @@ async function toggleMic() {
   if (!isRecording) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.start();
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(event.data);
+      }
+    };
+
+    mediaRecorder.start(500); // 每500ms发送一次音频
     isRecording = true;
     addChat("Listening...", "user");
+
   } else {
     mediaRecorder.stop();
     isRecording = false;
@@ -57,10 +67,19 @@ function testVoice() {
 function takeSnapshot() {
   const video = document.getElementById("video");
   const canvas = document.createElement("canvas");
+
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+
   canvas.getContext("2d").drawImage(video, 0, 0);
-  addChat("Snapshot captured.", "ai");
+
+  canvas.toBlob((blob) => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(blob);
+    }
+  }, "image/jpeg");
+
+  addChat("Snapshot sent.", "user");
 }
 
 function handleUpload(event) {
@@ -146,6 +165,47 @@ function highlightLoop() {
 
   currentWord = (currentWord + 1) % spans.length;
 }
+function highlightWord(index) {
+  const spans = document.querySelectorAll("#reading-text span");
+  spans.forEach(s => s.classList.remove("active-word"));
 
+  if (spans[index]) {
+    spans[index].classList.add("active-word");
+  }
+}
+function initWebSocket() {
+  ws = new WebSocket(CONFIG.WS_URL);
+
+  ws.onopen = () => {
+    console.log("WebSocket connected");
+  };
+
+  ws.onmessage = (event) => {
+    const data = event.data;
+
+    try {
+      const parsed = JSON.parse(data);
+
+      if (parsed.type === "text") {
+        addChat(parsed.message, "ai");
+      }
+
+      if (parsed.type === "highlight") {
+        highlightWord(parsed.index);
+      }
+
+    } catch {
+      console.log("Non-JSON message:", data);
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error("WebSocket error:", err);
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket closed");
+  };
+}
 renderMockText();
 setInterval(highlightLoop, 800);
