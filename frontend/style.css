@@ -113,9 +113,20 @@ body {
   background: #ffffff;
   border-radius: 16px;
   padding: 15px 6px 15px 15px;
+  display: flex;             /* ✅ 新增 flex */
+  flex-direction: column;    /* ✅ 垂直排列标题+消息区 */
   flex: 1;
-  min-height: 0;
- 
+  min-height: 0;             /* ✅ 必须，否则 flex 子元素无法收缩 */
+  overflow: hidden;          /* ✅ 防止内容超出 */
+}
+
+.chat-scroll {
+  flex: 1;                   /* 占满剩余空间 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
 }
 
 /* ================= CHAT MESSAGES BASE ================= */
@@ -242,12 +253,5 @@ body {
 .mode-dropdown div:hover {
   background: rgba(255,255,255,0.15);
 }
-.chat-scroll {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  scroll-behavior: smooth;
-}
+
 
