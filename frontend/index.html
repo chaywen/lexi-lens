@@ -23,21 +23,12 @@ style-src 'self' 'unsafe-inline';">
   <video id="video" autoplay muted></video>
 
   <!-- Snapshot 缩略图 -->
-  <div id="snapshot-thumb" style="
-       position:absolute; 
-       top:10px; 
-       right:10px; 
-       width:120px; 
-       height:90px; 
-       border:1px solid #ccc; 
-       overflow:hidden; 
-       display:none; 
-       z-index:10;">
+  <div id="snapshot-thumb" >
     <img id="snapshot-img" style="width:100%; height:100%; object-fit:cover;" />
   </div>
 
   <!-- Camera Overlay（只保留一个） -->
-  <div class="camera-overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; z-index:5;">
+  <div class="camera-overlay">
     <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
     <button id="snapshot-btn" class="btn">📸 Snapshot</button>
     <button id="upload-btn" class="btn">📄 Upload</button>
@@ -57,9 +48,9 @@ style-src 'self' 'unsafe-inline';">
       <!-- Right Panel -->
       <div class="right-panel">
         <!-- Text Display Area -->
-        <div class="text-display">
-          <div class="panel-title">Text Display Area</div>
-          <div id="reading-text">
+     <div class="text-panel">
+  <div class="panel-title">Text Display Area</div>
+  <div class="text-display" id="reading-text">
             <p>The recognized text will appear here.</p>
           </div>
         </div>
@@ -67,7 +58,7 @@ style-src 'self' 'unsafe-inline';">
         <!-- Chat Log Area -->
         <div class="chat-history">
           <div class="panel-title">Chat Log Area</div>
-          <div class="chat-scroll" id="chat-history">
+          <div class="chat-scroll" id="chat-scroll">
             <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
           </div>
         </div>
