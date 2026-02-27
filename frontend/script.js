@@ -104,12 +104,8 @@ function addChat(text, sender) {
   chatArea.appendChild(div);
 
   // 自动平滑滚动到底部
-  requestAnimationFrame(() => {
-    chatArea.scrollTo({
-      top: chatArea.scrollHeight,
-      behavior: "smooth"
-    });
-  });
+    // ✅ 自动滚动到底部
+  chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function increaseFont() {
