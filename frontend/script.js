@@ -96,11 +96,20 @@ function explainSimply() {
 
 function addChat(text, sender) {
   const chatArea = document.getElementById("chat-history");
+
   const div = document.createElement("div");
   div.className = `chat-message ${sender}`;
   div.textContent = text;
+
   chatArea.appendChild(div);
-  chatArea.scrollTop = chatArea.scrollHeight;
+
+  // 自动平滑滚动到底部
+  requestAnimationFrame(() => {
+    chatArea.scrollTo({
+      top: chatArea.scrollHeight,
+      behavior: "smooth"
+    });
+  });
 }
 
 function increaseFont() {
