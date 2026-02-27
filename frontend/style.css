@@ -112,31 +112,24 @@ body {
 .chat-history {
   background: #ffffff;
   border-radius: 16px;
-  padding: 15px 6px 15px 15px; /* 右边靠近滚动条 */
+  padding: 15px 6px 15px 15px;
   flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;          /* ✅ 增加消息间距 */
-  min-height: 0;      
-  scroll-behavior: smooth;  
+  min-height: 0;
+ 
 }
 
 /* ================= CHAT MESSAGES BASE ================= */
 .chat-message {
-  margin: 0; /* ✅ 确保没有额外外边距 */
-  padding: 8px 12px;          /* ✅ 内边距更紧凑 */
-  border-radius: 14px;        /* ✅ 圆角小一点 */
-  max-width: 60%;             /* ✅ bubble 小一点 */
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 58%;
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
   animation: fadeIn 0.25s ease;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
-  /* ✅ 新增 */
-    margin-top: 0; 
-    margin-bottom: 0; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin: 0;   /* 保持0，让gap控制间距 */
 }
 
 /* ================= AI BUBBLE (左) ================= */
@@ -186,13 +179,7 @@ body {
   border-radius: 4px;
 }
 
-.chat-history {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 15px 6px 15px 15px;
-  flex: 1;
-  min-height: 0;
-}
+
 /* ================= ACTIVE WORD HIGHLIGHT ================= */
 .active-word {
   background: #ffd54f;
@@ -254,5 +241,13 @@ body {
 
 .mode-dropdown div:hover {
   background: rgba(255,255,255,0.15);
+}
+.chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
 }
 
