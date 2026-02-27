@@ -29,6 +29,10 @@ function setupEvents() {
   document.getElementById("upload-btn").addEventListener("click", () =>
     document.getElementById("file-input").click()
   );
+  document.getElementById("mode-toggle").addEventListener("click", () => {
+  const menu = document.getElementById("mode-dropdown");
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+});
   document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
   document.getElementById("file-input").addEventListener("change", handleUpload);
   document.getElementById("mock-btn")?.addEventListener("click", playMock);
@@ -233,19 +237,20 @@ function initWebSocket() {
     console.log("WebSocket closed");
   };
 }
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("mode-btn")) {
-    document.querySelectorAll(".mode-btn")
-      .forEach(btn => btn.classList.remove("active"));
+document.getElementById("mode-dropdown").addEventListener("click", (e) => {
+  const mode = e.target.dataset.mode;
+  if (!mode) return;
 
-    e.target.classList.add("active");
+  document.getElementById("mode-dropdown").style.display = "none";
 
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: "mode",
-        mode: e.target.dataset.mode
-      }));
-    }
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: "mode",
+      mode: mode
+    }));
   }
+
+  renderMockTextForMode(mode);
 });
+setInterval(highlightLoop, 800);
 renderMockText();
