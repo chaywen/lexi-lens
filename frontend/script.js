@@ -122,13 +122,25 @@ function takeSnapshot() {
   canvas.getContext("2d").drawImage(video, 0, 0);
 
   canvas.toBlob((blob) => {
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    const base64Frame = reader.result;
-    sendMessage("snapshot", { frame: base64Frame });
-  };
-  reader.readAsDataURL(blob);
-}, "image/jpeg");
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Frame = reader.result;
+
+      // ===== 新增 =====
+      // 1. 显示摄像头右上角缩略图
+      const thumbImg = document.getElementById("snapshot-img");
+      thumbImg.src = base64Frame;
+      document.getElementById("snapshot-thumb").style.display = "block";
+
+      // 2. 渲染 Text Display Area (先用 mock data)
+      const mockText = ["This","is","snapshot","mock","text"];
+      renderMockTextFromArray(mockText);
+
+      // 3. 发送到后端
+      sendMessage("snapshot", { frame: base64Frame });
+    };
+    reader.readAsDataURL(blob);
+  }, "image/jpeg");
 
   addChat("Snapshot sent.", "user");
 }
