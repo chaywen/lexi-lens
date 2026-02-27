@@ -59,6 +59,7 @@ function setupEvents() {
 let audioContext, analyser, dataArray;
 
 async function toggleMic() {
+      let btn = document.getElementById("mic-btn"); // ✅ 必须先拿到元素
   if (!isRecording) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
@@ -77,7 +78,7 @@ for (let i = 0; i < dataArray.length; i++) sum += (dataArray[i]-128)**2;
 let rms = Math.sqrt(sum / dataArray.length) / 128;
 btn.style.transform = `scale(${1 + rms * 0.6})`;
       if (isRecording) requestAnimationFrame(updateMicAnimation);
-      else btn.style.transform = "scale(1)";
+      else btn.style.transform = `scale(${1 + rms * 0.6})`;
     }
     updateMicAnimation();
 
@@ -152,7 +153,7 @@ function explainSimply() {
 }
 
 function addChat(text, sender) {
-  const chatArea = document.getElementById("chat-history");
+  const chatArea = document.getElementById("chat-scroll");
 
   const div = document.createElement("div");
   div.className = `chat-message ${sender}`;
