@@ -135,8 +135,8 @@ body {
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
   /* ✅ 新增 */
-    margin-top: 5px; 
-    margin-bottom: 5px; 
+    margin-top: 0; 
+    margin-bottom: 0; 
 }
 
 /* ================= AI BUBBLE (左) ================= */
