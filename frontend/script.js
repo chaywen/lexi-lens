@@ -121,30 +121,40 @@ function takeSnapshot() {
 
   canvas.getContext("2d").drawImage(video, 0, 0);
 
+  const snapshotThumb = document.getElementById("snapshot-thumb");
+  const snapshotImg = document.getElementById("snapshot-img");
+
   canvas.toBlob((blob) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64Frame = reader.result;
 
-      // ===== 新增 =====
-      // 1. 显示摄像头右上角缩略图
-      const thumbImg = document.getElementById("snapshot-img");
-      thumbImg.src = base64Frame;
-      document.getElementById("snapshot-thumb").style.display = "block";
+      // 显示缩略图
+      snapshotImg.src = base64Frame;
+      snapshotThumb.style.display = "block";
 
-      // 2. 渲染 Text Display Area (先用 mock data)
-      const mockText = ["This","is","snapshot","mock","text"];
-      renderMockTextFromArray(mockText);
+      // 模拟文字识别逻辑
+      // 假设这里是后端返回的文字
+      // 如果文字为空，则显示提示
+      let recognizedText = ""; // 模拟没有文字
+      // recognizedText = "Detected text here."; // 模拟有文字
 
-      // 3. 发送到后端
+      const readingText = document.getElementById("reading-text");
+      if (recognizedText.trim() === "") {
+        readingText.innerHTML = `<p style="color: gray;">No text detected in snapshot.</p>`;
+      } else {
+        readingText.innerHTML = `<p>${recognizedText}</p>`;
+      }
+
+      // Chat log 提示
+      addChat("Snapshot taken and text displayed.", "user");
+
+      // Phase2 正式用，发送 WS 消息
       sendMessage("snapshot", { frame: base64Frame });
     };
     reader.readAsDataURL(blob);
   }, "image/jpeg");
-
-  addChat("Snapshot sent.", "user");
 }
-
 function handleUpload(event) {
   const files = event.target.files;
   for (let f of files) {
