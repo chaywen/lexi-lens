@@ -91,7 +91,7 @@ body {
 .panel-title {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 0;
+  margin-bottom: 3px;
 }
 
 .text-display {
@@ -122,7 +122,7 @@ body {
 
 /* ================= CHAT MESSAGES BASE ================= */
 .chat-message {
-    margin: 0; /* ✅ 确保没有额外外边距 */
+  margin: 0; /* ✅ 确保没有额外外边距 */
   padding: 8px 12px;          /* ✅ 内边距更紧凑 */
   border-radius: 14px;        /* ✅ 圆角小一点 */
   max-width: 55%;             /* ✅ bubble 小一点 */
@@ -131,8 +131,10 @@ body {
   word-wrap: break-word;
   animation: fadeIn 0.25s ease;
   transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
-
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* 基础立体感 */
+  /* ✅ 新增 */
+    margin-top: 4px; 
+    margin-bottom: 4px; 
 }
 
 /* ================= AI BUBBLE (左) ================= */
