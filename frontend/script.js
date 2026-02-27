@@ -56,15 +56,33 @@ function setupEvents() {
 });
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
 }
+let audioContext, analyser, dataArray;
+
 async function toggleMic() {
   if (!isRecording) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
 
+    // 新增：音量分析
+    audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    function updateMicAnimation() {
+      analyser.getByteTimeDomainData(dataArray);
+     let sum = 0;
+for (let i = 0; i < dataArray.length; i++) sum += (dataArray[i]-128)**2;
+let rms = Math.sqrt(sum / dataArray.length) / 128;
+btn.style.transform = `scale(${1 + rms * 0.6})`;
+      if (isRecording) requestAnimationFrame(updateMicAnimation);
+      else btn.style.transform = "scale(1)";
+    }
+    updateMicAnimation();
+
     mediaRecorder.ondataavailable = (event) => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(event.data);
-      }
+      if (ws && ws.readyState === WebSocket.OPEN) ws.send(event.data);
     };
 
     mediaRecorder.start(500);
@@ -73,10 +91,10 @@ async function toggleMic() {
 
   } else {
     mediaRecorder.stop();
-
     mediaRecorder.stream.getTracks().forEach(track => track.stop());
-
+    audioContext.close();
     isRecording = false;
+    document.getElementById("mic-btn").style.transform = "scale(1)";
   }
 }
 function testVoice() {
