@@ -207,5 +207,20 @@ function initWebSocket() {
     console.log("WebSocket closed");
   };
 }
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("mode-btn")) {
+    document.querySelectorAll(".mode-btn")
+      .forEach(btn => btn.classList.remove("active"));
+
+    e.target.classList.add("active");
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: "mode",
+        mode: e.target.dataset.mode
+      }));
+    }
+  }
+});
 renderMockText();
 setInterval(highlightLoop, 800);
