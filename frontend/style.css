@@ -232,3 +232,31 @@ body {
   border-radius: 4px;
 }
 
+.mode-wrapper {
+  position: relative;
+}
+
+.mode-dropdown {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 8px 0;
+  display: none;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+.mode-dropdown div {
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.mode-dropdown div:hover {
+  background: rgba(255,255,255,0.15);
+}
+
