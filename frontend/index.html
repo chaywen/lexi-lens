@@ -19,17 +19,21 @@ style-src 'self' 'unsafe-inline';">
       <!-- Camera Card -->
       <div class="camera-card">
         <div class="camera-inner">
-          <div class="mode-selector">
-  <button class="mode-btn active" data-mode="book">Book</button>
-  <button class="mode-btn" data-mode="form">Form</button>
-  <button class="mode-btn" data-mode="study">Study</button>
-  <button class="mode-btn" data-mode="write">Write</button>
-</div>
+      
           <video id="video" autoplay muted></video>
           <div class="camera-overlay">
             <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
             <button id="snapshot-btn" class="btn">📸 Snapshot</button>
             <button id="upload-btn" class="btn">📄 Upload</button>
+            <div class="mode-wrapper">
+              <button id="mode-toggle" class="btn">⚙ Mode</button>
+              <div class="mode-dropdown" id="mode-dropdown">
+                <div data-mode="book">Book</div>
+                <div data-mode="form">Form</div>
+                <div data-mode="study">Study</div>
+                <div data-mode="write">Write</div>
+              </div>
+            </div>
             <input type="file" id="file-input" style="display:none" multiple>
           </div>
         </div>
