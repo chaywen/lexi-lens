@@ -112,7 +112,14 @@ function takeSnapshot() {
 
   canvas.getContext("2d").drawImage(video, 0, 0);
 
+  // 1️⃣ 生成缩略图 URL 并显示
+  const snapshotImg = document.getElementById("snapshot-img");
   canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    snapshotImg.src = url;
+    document.getElementById("snapshot-thumb").style.display = "block";
+
+    // 2️⃣ 发送给后端（可选，后续阶段）
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(blob);
     }
