@@ -1,4 +1,4 @@
-/* Reset & Base */
+/* ================= RESET & BASE ================= */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -6,7 +6,7 @@ body {
   color: #1f2933;
 }
 
-/* Main Layout */
+/* ================= MAIN LAYOUT ================= */
 .main-layout {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -14,11 +14,10 @@ body {
   padding: 20px;
   height: 100vh;
   box-sizing: border-box;
-
-  overflow: hidden;   /* ✅ 新增 */
+  overflow: hidden; /* 防止内容撑开 */
 }
 
-/* ===== Camera Card ===== */
+/* ================= CAMERA CARD ================= */
 .camera-card {
   position: relative;
   display: flex;
@@ -26,7 +25,6 @@ body {
   align-items: center;
 }
 
-/* Inner black semi-transparent box */
 .camera-inner {
   background: rgba(0,0,0,0.55);
   border-radius: 24px;
@@ -40,7 +38,6 @@ body {
   box-shadow: 0 12px 36px rgba(0,0,0,0.3);
 }
 
-/* Video inside inner box */
 #video {
   width: 100%;
   height: 100%;
@@ -48,7 +45,7 @@ body {
   border-radius: 20px;
 }
 
-/* Overlay Buttons */
+/* ================= OVERLAY BUTTONS ================= */
 .camera-overlay {
   position: absolute;
   bottom: 15px;
@@ -60,15 +57,13 @@ body {
 .btn {
   min-height: 48px;
   padding: 12px 16px;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.25);
   cursor: pointer;
   font-size: 16px;
-
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   color: #ffffff;
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   transition: all 0.25s ease;
@@ -85,25 +80,22 @@ body {
   border: 1px solid rgba(255,255,255,0.25);
 }
 
-/* ===== Right Panel ===== */
+/* ================= RIGHT PANEL ================= */
 .right-panel {
   display: flex;
   flex-direction: column;
   gap: 20px;
-
-  min-height: 0;   /* ✅ 关键修复 */
+  min-height: 0; /* 防止撑开 */
 }
 
-/* Panel Titles */
 .panel-title {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 8px;
 }
 
-/* Text Display */
 .text-display {
-  background: #fff7e6; /* 浅黄色 */
+  background: #fff7e6;
   border-radius: 16px;
   padding: 20px;
   font-size: 18px;
@@ -115,61 +107,59 @@ body {
   overflow-y: auto;
 }
 
-/* Chat History */
 .chat-history {
   background: #ffffff;
   border-radius: 16px;
-  padding: 15px 4px 15px 15px;  
+  padding: 15px 12px;
   flex: 1;
   overflow-y: auto;
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-    min-height: 0;   /* ✅ 关键修复 */
-    scroll-behavior: smooth;   /* 新增：自动平滑滚动 */
+  gap: 12px; /* bubble 间距 */
+  min-height: 0;
+  scroll-behavior: smooth; /* 平滑滚动 */
 }
-/* ===== Chat Messages Base ===== */
+
+/* ================= CHAT MESSAGES ================= */
 .chat-message {
   padding: 12px 16px;
-  border-radius: 20px;   /* 全圆角 */
-  max-width: 75%;
+  border-radius: 20px; /* 全圆角 */
+  max-width: 70%;
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
   animation: fadeIn 0.25s ease;
 }
 
-/* AI 靠左 */
+/* AI Bubble - 靠左 */
 .chat-message.ai {
   background: #d8b4fe;
   color: #1f2933;
   align-self: flex-start;
+  margin-right: auto; /* 避免居中，多余空间在右边 */
 }
 
-/* User 靠右 */
+/* User Bubble - 靠右并缩进 */
 .chat-message.user {
   background: #4b5563;
   color: #ffffff;
   align-self: flex-end;
+  margin-left: auto; /* 避免居中，多余空间在左边 */
 }
 
-/* 淡入动画 */
+/* ================= FADE-IN ANIMATION ================= */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from {opacity: 0; transform: translateY(6px);}
+  to {opacity: 1; transform: translateY(0);}
 }
-/* Control Bar Buttons */
+
+/* ================= CONTROL BAR ================= */
 .control-bar {
   display: flex;
   gap: 10px;
 }
+
 .btn-outline {
   padding: 8px 12px;
   border-radius: 12px;
@@ -180,20 +170,24 @@ body {
   font-size: 14px;
   transition: 0.2s;
 }
+
 .btn-outline:hover {
   background: #f3f4f6;
 }
 
-/* Scrollbars */
+/* ================= SCROLLBARS ================= */
 .text-display::-webkit-scrollbar,
 .chat-history::-webkit-scrollbar {
   width: 8px;
 }
+
 .text-display::-webkit-scrollbar-thumb,
 .chat-history::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.2);
   border-radius: 4px;
 }
+
+/* ================= ACTIVE WORD HIGHLIGHT ================= */
 .active-word {
   background: #ffd54f;
   border-radius: 4px;
