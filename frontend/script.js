@@ -2,6 +2,15 @@ const CONFIG = {
   WS_URL: "ws://localhost:8080/ws/session",
   API_URL: "http://localhost:8080"
 };
+const SESSION_TOKEN = crypto.randomUUID();
+const ALLOWED_TYPES = [
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'image/webp'
+];
+
+const MAX_SIZE = 10 * 1024 * 1024;
 
 let isRecording = false;
 let mediaRecorder = null;
@@ -9,10 +18,19 @@ let videoStream = null;
 let ws = null;
 
 window.addEventListener("DOMContentLoaded", () => {
-  initCamera();
   setupEvents();
-  initWebSocket();
+
+  if (!sessionStorage.getItem("privacy_consented")) {
+    document.getElementById("privacy-modal").style.display = "flex";
+  } else {
+    initSession();
+  }
 });
+
+function initSession() {
+  initCamera();
+  initWebSocket();
+}
 
 async function initCamera() {
   try {
@@ -22,7 +40,15 @@ async function initCamera() {
     console.error("Camera error:", err);
   }
 }
+function sendMessage(type, payload = {}) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
+  sendMessage(JSON.stringify({
+    type,
+    session_token: SESSION_TOKEN,
+    ...payload
+  }));
+}
 function setupEvents() {
   document.getElementById("mic-btn").addEventListener("click", toggleMic);
   document.getElementById("snapshot-btn").addEventListener("click", takeSnapshot);
@@ -32,6 +58,11 @@ function setupEvents() {
   document.getElementById("mode-toggle").addEventListener("click", () => {
   const menu = document.getElementById("mode-dropdown");
   menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+});
+  document.getElementById("consent-btn")?.addEventListener("click", () => {
+  sessionStorage.setItem("privacy_consented", "true");
+  document.getElementById("privacy-modal").style.display = "none";
+  initSession();
 });
   document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
   document.getElementById("file-input").addEventListener("change", handleUpload);
@@ -46,7 +77,7 @@ function setupEvents() {
   document.getElementById("mode-dropdown").style.display = "none";
 
   if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({
+    sendMessage(JSON.stringify({
       type: "mode",
       mode: mode
     }));
@@ -57,6 +88,20 @@ function setupEvents() {
   document.getElementById("font-decrease")?.addEventListener("click", decreaseFont);
 }
 let audioContext, analyser, dataArray;
+function validateFile(file) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    showInlineError("Only PDF, PNG, JPG, WEBP allowed.");
+    return false;
+  }
+
+  if (file.size > MAX_SIZE) {
+    showInlineError("File too large (max 10MB).");
+    return false;
+  }
+
+  return true;
+}
+
 
 async function toggleMic() {
       let btn = document.getElementById("mic-btn"); // ✅ 必须先拿到元素
@@ -83,7 +128,7 @@ btn.style.transform = `scale(${1 + rms * 0.6})`;
     updateMicAnimation();
 
     mediaRecorder.ondataavailable = (event) => {
-      if (ws && ws.readyState === WebSocket.OPEN) ws.send(event.data);
+      if (ws && ws.readyState === WebSocket.OPEN) sendMessage(event.data);
     };
 
     mediaRecorder.start(500);
@@ -121,7 +166,7 @@ function takeSnapshot() {
 
     // 2️⃣ 发送给后端（可选，后续阶段）
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(blob);
+      sendMessage(blob);
     }
   }, "image/jpeg");
 
@@ -130,8 +175,15 @@ function takeSnapshot() {
 
 function handleUpload(event) {
   const files = event.target.files;
+
   for (let f of files) {
+
+    // 🔐 先验证
+    if (!validateFile(f)) return;
+
     addChat(`Uploaded: ${f.name}`, "user");
+
+    // 以后这里再加 fetch 上传
   }
 }
 
@@ -238,6 +290,10 @@ function highlightWord(index) {
 
   if (spans[index]) {
     spans[index].classList.add("active-word");
+    spans[index].scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
   }
 }
 
