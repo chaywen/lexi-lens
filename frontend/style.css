@@ -364,3 +364,18 @@ body {
 .modal.show .modal-content {
   transform: scale(1);
 }
+
+/* ===== Inline Error FIXED VERSION ===== */
+.inline-error {
+  position: fixed;          /* 关键：脱离文档流 */
+  top: 20px;                /* 右上角 */
+  right: 20px;
+  background: #ef4444;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: none;
+  z-index: 9999;            /* 比 modal 还高 */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  animation: fadeIn 0.25s ease;
+}
