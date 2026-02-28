@@ -61,7 +61,11 @@ function setupEvents() {
 });
   document.getElementById("consent-btn")?.addEventListener("click", () => {
   sessionStorage.setItem("privacy_consented", "true");
-  initSession();
+
+  const modal = document.getElementById("privacy-modal");
+  modal.classList.remove("show");   // ✅ 关键：关闭弹窗
+
+  initSession();                    // ✅ 再启动 camera + websocket
 });
   document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
   document.getElementById("file-input").addEventListener("change", handleUpload);
