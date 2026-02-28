@@ -87,11 +87,13 @@ let audioContext, analyser, dataArray;
 function validateFile(file) {
   if (!ALLOWED_TYPES.includes(file.type)) {
     showInlineError("Only PDF, PNG, JPG, WEBP allowed.");
+    addChat("Invalid file type.", "ai");   // ✅ 加这一行
     return false;
   }
 
   if (file.size > MAX_SIZE) {
     showInlineError("File too large (max 10MB).");
+    addChat("File too large.", "ai");      // ✅ 加这一行
     return false;
   }
 
