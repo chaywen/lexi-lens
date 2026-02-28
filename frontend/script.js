@@ -20,11 +20,11 @@ let ws = null;
 window.addEventListener("DOMContentLoaded", () => {
   setupEvents();
 
-  if (!sessionStorage.getItem("privacy_consented")) {
-    document.getElementById("privacy-modal").style.display = "flex";
-  } else {
-    initSession();
-  }
+ if (!sessionStorage.getItem("privacy_consented")) {
+  document.getElementById("privacy-modal").classList.add("show");
+} else {
+  initSession();
+}
 });
 
 function initSession() {
@@ -61,7 +61,6 @@ function setupEvents() {
 });
   document.getElementById("consent-btn")?.addEventListener("click", () => {
   sessionStorage.setItem("privacy_consented", "true");
-  document.getElementById("privacy-modal").style.display = "none";
   initSession();
 });
   document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
