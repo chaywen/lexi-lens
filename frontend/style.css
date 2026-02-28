@@ -334,3 +334,8 @@ body {
   display: none;
   z-index: 1000;
 }
+
+#consent-btn {
+  background: #16a34a;
+  color: white;
+}
