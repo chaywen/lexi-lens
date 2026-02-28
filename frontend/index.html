@@ -26,20 +26,20 @@ style-src 'self' 'unsafe-inline';">
   </div>
 </div>
   <div id="inline-error" class="inline-error"></div>
-  <div id="app">
-    <div class="main-layout">
+<div id="app" class="theme-nano">
+  <div class="main-layout">
       <!-- Camera Card -->
-      <div class="camera-card">
-        <div class="camera-inner">
+<div class="camera-card card accent-border">
+  <div class="camera-inner">
           <!-- 视频右上角缩略图 -->
-          <div id="snapshot-thumb">
-            <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
-          </div>
+          <div id="snapshot-thumb" class="snapshot-thumb">
+  <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
+</div>
           <video id="video" autoplay muted></video>
           <div class="camera-overlay">
-            <button id="mic-btn" class="btn mic-btn">🎙 Mic</button>
-            <button id="snapshot-btn" class="btn">📸 Snapshot</button>
-            <button id="upload-btn" class="btn">📄 Upload</button>
+            <button id="mic-btn" class="btn fab mic-btn" aria-label="Mic">🎙</button>
+<button id="snapshot-btn" class="btn fab" aria-label="Snapshot">📸</button>
+<button id="upload-btn" class="btn fab" aria-label="Upload">📄</button>
             <div class="mode-wrapper">
               <button id="mode-toggle" class="btn">⚙ Mode</button>
               <div class="mode-dropdown" id="mode-dropdown">
@@ -65,16 +65,17 @@ style-src 'self' 'unsafe-inline';">
         </div>
 
         <!-- Chat Log Area -->
-        <div class="chat-history">
-          <div class="panel-title">Chat Log Area</div>
+         <div class="chat-history card">
+          <div class="panel-title">Chat Log</div>
+
           <div class="chat-scroll" id="chat-scroll">
             <div class="chat-message ai">Lexi: Hello! I am ready to read for you.</div>
           </div>
         </div>
 
         <!-- Control Buttons -->
-        <div class="control-bar">
-          <button id="explain-btn" class="btn-outline">Explain Simply</button>
+<div class="control-bar toolbar card">
+  <button id="explain-btn" class="btn-outline">Explain Simply</button>
           <button id="test-voice-btn" class="btn-outline">🔊 Test Voice</button>
           <button id="stop-btn" class="btn-outline">Stop Reading</button>
           <button id="font-increase" class="btn-outline">A+</button>
