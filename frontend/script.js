@@ -43,7 +43,7 @@ async function initCamera() {
 function sendMessage(type, payload = {}) {
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-  sendMessage(JSON.stringify({
+  ws.send(JSON.stringify({
     type,
     session_token: SESSION_TOKEN,
     ...payload
@@ -77,10 +77,7 @@ function setupEvents() {
   document.getElementById("mode-dropdown").style.display = "none";
 
   if (ws && ws.readyState === WebSocket.OPEN) {
-    sendMessage(JSON.stringify({
-      type: "mode",
-      mode: mode
-    }));
+    sendMessage("mode", { mode });
   }
 
   renderMockTextForMode(mode);
@@ -128,7 +125,7 @@ btn.style.transform = `scale(${1 + rms * 0.6})`;
     updateMicAnimation();
 
     mediaRecorder.ondataavailable = (event) => {
-      if (ws && ws.readyState === WebSocket.OPEN) sendMessage(event.data);
+      if (ws && ws.readyState === WebSocket.OPEN) ws.send(event.data);
     };
 
     mediaRecorder.start(500);
@@ -166,7 +163,7 @@ function takeSnapshot() {
 
     // 2️⃣ 发送给后端（可选，后续阶段）
     if (ws && ws.readyState === WebSocket.OPEN) {
-      sendMessage(blob);
+      ws.send(blob);
     }
   }, "image/jpeg");
 
@@ -276,6 +273,9 @@ function renderMockTextForMode(mode) {
 }
 function highlightLoop() {
   const spans = document.querySelectorAll("#reading-text span");
+
+  if (spans.length === 0) return;   // ✅ 先检查
+
   spans.forEach(s => s.classList.remove("active-word"));
 
   if (spans[currentWord]) {
@@ -296,7 +296,15 @@ function highlightWord(index) {
     });
   }
 }
+function showInlineError(message) {
+  const el = document.getElementById("inline-error");
+  el.textContent = message;
+  el.style.display = "block";
 
+  setTimeout(() => {
+    el.style.display = "none";
+  }, 3000);
+}
 function initWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
