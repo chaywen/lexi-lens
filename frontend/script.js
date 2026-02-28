@@ -21,12 +21,40 @@ window.addEventListener("DOMContentLoaded", () => {
   setupEvents();
 
   if (!sessionStorage.getItem("privacy_consented")) {
-    document.getElementById("privacy-modal").style.display = "flex";
-  } else {
+  document.getElementById("privacy-modal").style.display = "flex";
+  showModal("privacy-modal"); // 自动淡入
+} else {
     initSession();
   }
 });
 
+// ===== UI 动画辅助函数 =====
+function showModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.add("show");   // CSS 控制渐入
+}
+
+function hideModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.remove("show");
+  setTimeout(() => modal.style.display = "none", 300); // 保持 CSS 过渡时间一致
+}
+
+function showElementWithFade(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.style.display = "block";     // 必须先显示
+  setTimeout(() => el.classList.add("show"), 50); // 延迟让过渡生效
+}
+
+function hideElementWithFade(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.classList.remove("show");
+  setTimeout(() => el.style.display = "none", 300);
+}
 function initSession() {
   initCamera();
   initWebSocket();
@@ -61,7 +89,7 @@ function setupEvents() {
 });
   document.getElementById("consent-btn")?.addEventListener("click", () => {
   sessionStorage.setItem("privacy_consented", "true");
-  document.getElementById("privacy-modal").style.display = "none";
+  hideModal("privacy-modal"); // ✅ 使用动画隐藏
   initSession();
 });
   document.getElementById("test-voice-btn")?.addEventListener("click", testVoice);
@@ -159,8 +187,7 @@ function takeSnapshot() {
   canvas.toBlob((blob) => {
     const url = URL.createObjectURL(blob);
     snapshotImg.src = url;
-    document.getElementById("snapshot-thumb").style.display = "block";
-
+showElementWithFade("snapshot-thumb");  // CSS渐入动画
     // 2️⃣ 发送给后端（可选，后续阶段）
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(blob);
