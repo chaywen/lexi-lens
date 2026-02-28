@@ -98,10 +98,27 @@ body {
   opacity: 0;
 }
 
+.mic-btn:hover {
+  transform: scale(1.1);  /* 鼠标悬停微放大 */
+}
+
+.mic-btn::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #10b981;      /* 绿色脉冲 */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pulse 1s infinite;
+}
+
 @keyframes pulse {
-  0% { transform: translateX(-50%) scaleY(1); opacity: 0.3; }
-  50% { transform: translateX(-50%) scaleY(2.5); opacity: 0.8; }
-  100% { transform: translateX(-50%) scaleY(1); opacity: 0.3; }
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
 }
 
 /* ================= RIGHT PANEL ================= */
@@ -165,6 +182,8 @@ body {
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   margin: 0;   /* 保持0，让gap控制间距 */
+  opacity: 0; 
+  transform: translateY(10px); 
 }
 
 /* ================= AI BUBBLE (左) ================= */
@@ -194,9 +213,26 @@ body {
 }
 
 /* ================= HOVER EFFECT ================= */
+/* 添加渐入动画 */
+.chat-message {
+  opacity: 0; 
+  transform: translateY(10px); 
+  animation: fadeIn 0.25s forwards;
+}
+
+/* hover轻微浮动 */
 .chat-message:hover {
-  transform: translateY(-1px) scale(1.01);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ================= ACTIVE WORD HIGHLIGHT ================= */
+
+/* 高亮渐变（可选让 active-word 更炫） */
+.active-word {
+  background: linear-gradient(90deg, #fde68a, #facc15);
+  border-radius: 4px;
+  transition: background 0.3s ease;
 }
 
 /* ================= FADE-IN ANIMATION ================= */
@@ -215,11 +251,7 @@ body {
 }
 
 
-/* ================= ACTIVE WORD HIGHLIGHT ================= */
-.active-word {
-  background: #ffd54f;
-  border-radius: 4px;
-}
+
 
 /* ================= CONTROL BAR ================= */
 .control-bar {
@@ -297,10 +329,13 @@ body {
   border-radius: 8px;
 }
 
+#snapshot-thumb.show {
+  opacity: 1;                /* 显示时渐入 */
+}
+
 #snapshot-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
 }
 
 /* ===== Modal ===== */
@@ -312,6 +347,14 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 999;
+
+  opacity: 0;          /* 新增：用于淡入 */
+  transition: opacity 0.3s ease; /* 淡入动画 */
+}
+
+.modal.show {
+  display: flex;       /* 保持原显示方式 */
+  opacity: 1;          /* 淡入显示 */
 }
 
 .modal-content {
@@ -320,6 +363,23 @@ body {
   border-radius: 16px;
   width: 320px;
   text-align: center;
+  transition: transform 0.3s ease;  /* 新增：弹窗微弹动效 */
+  transform: scale(0.95);           /* 默认微缩 */
+}
+
+.modal.show .modal-content {
+  transform: scale(1);               /* 弹入到原尺寸 */
+}
+
+/* 同时增强按钮 hover */
+#consent-btn {
+  background: #16a34a;
+  color: white;
+  transition: all 0.2s ease;   /* 新增：平滑过渡 */
+}
+#consent-btn:hover {
+  background: #059669;         /* 更亮的绿 */
+  transform: scale(1.05);      /* 微放大 */
 }
 
 /* ===== Inline Error ===== */
@@ -333,9 +393,4 @@ body {
   border-radius: 8px;
   display: none;
   z-index: 1000;
-}
-
-#consent-btn {
-  background: #16a34a;
-  color: white;
 }
