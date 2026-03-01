@@ -118,32 +118,25 @@ async function toggleMic() {
     source.connect(analyser);
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-    function updateMicAnimation() {
-      analyser.getByteTimeDomainData(dataArray);
-     let sum = 0;
-for (let i = 0; i < dataArray.length; i++) sum += (dataArray[i]-128)**2;
-let rms = Math.sqrt(sum / dataArray.length) / 128;
-btn.style.transform = `scale(${1 + rms * 0.6})`;
-      if (isRecording) requestAnimationFrame(updateMicAnimation);
-      else btn.style.transform = `scale(${1 + rms * 0.6})`;
-    }
-    updateMicAnimation();
+function updateMicAnimation() {
+  analyser.getByteFrequencyData(dataArray);
 
-    mediaRecorder.ondataavailable = (event) => {
-      if (ws && ws.readyState === WebSocket.OPEN) ws.send(event.data);
-    };
-
-    mediaRecorder.start(500);
-    isRecording = true;
-    addChat("Listening...", "user");
-
-  } else {
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(track => track.stop());
-    audioContext.close();
-    isRecording = false;
-    document.getElementById("mic-btn").style.transform = "scale(1)";
+  let sum = 0;
+  for (let i = 0; i < dataArray.length; i++) {
+    sum += dataArray[i];
   }
+
+  let avg = sum / dataArray.length;   // 平均音量 (0–255)
+  let normalized = avg / 255;         // 归一化 0–1
+
+  // 设置一个静音阈值
+  if (normalized < 0.05) {
+    btn.style.transform = "scale(1)";
+  } else {
+    btn.style.transform = `scale(${1 + normalized * 0.8})`;
+  }
+
+  if (isRecording) requestAnimationFrame(updateMicAnimation);
 }
 function testVoice() {
   const msg = "Hello, I am Lexi.";
