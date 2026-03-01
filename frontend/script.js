@@ -106,37 +106,63 @@ function validateFile(file) {
 
 
 async function toggleMic() {
-      let btn = document.getElementById("mic-btn"); // ✅ 必须先拿到元素
+  let btn = document.getElementById("mic-btn");
+
   if (!isRecording) {
+
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
 
-    // 新增：音量分析
     audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
+
     analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.8;
+
     source.connect(analyser);
+
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-function updateMicAnimation() {
-  analyser.getByteFrequencyData(dataArray);
+    isRecording = true;
 
-  let sum = 0;
-  for (let i = 0; i < dataArray.length; i++) {
-    sum += dataArray[i];
-  }
+    function updateMicAnimation() {
+      analyser.getByteFrequencyData(dataArray);
 
-  let avg = sum / dataArray.length;   // 平均音量 (0–255)
-  let normalized = avg / 255;         // 归一化 0–1
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        sum += dataArray[i];
+      }
 
-  // 设置一个静音阈值
-  if (normalized < 0.05) {
-    btn.style.transform = "scale(1)";
+      let avg = sum / dataArray.length;
+      let normalized = avg / 255;
+
+      if (normalized < 0.05) {
+        btn.style.transform = "scale(1)";
+      } else {
+        btn.style.transform = `scale(${1 + normalized * 0.9})`;
+      }
+
+      if (isRecording) {
+        requestAnimationFrame(updateMicAnimation);
+      } else {
+        btn.style.transform = "scale(1)";
+      }
+    }
+
+    updateMicAnimation();   // ⭐⭐⭐ 关键：启动动画循环
+
+    mediaRecorder.start(500);
+    addChat("Listening...", "user");
+
   } else {
-    btn.style.transform = `scale(${1 + normalized * 0.8})`;
-  }
 
-  if (isRecording) requestAnimationFrame(updateMicAnimation);
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    audioContext.close();
+    isRecording = false;
+    btn.style.transform = "scale(1)";
+  }
 }
 function testVoice() {
   const msg = "Hello, I am Lexi.";
