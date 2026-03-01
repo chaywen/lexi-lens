@@ -29,14 +29,17 @@ style-src 'self' 'unsafe-inline';">
   <div class="main-layout">
       <!-- Camera Card -->
 <div class="camera-card card accent-border">
-  <div class="camera-inner">
-          <!-- 视频右上角缩略图 -->
-          <div id="snapshot-thumb" class="snapshot-thumb">
-  <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
-              <div id="inline-error" class="inline-error"></div>
+<div class="camera-inner">
 
-</div>
-          <video id="video" autoplay muted></video>
+  <!-- 摄像区域错误提示 -->
+  <div id="inline-error" class="inline-error"></div>
+
+  <!-- 视频右上角缩略图 -->
+  <div id="snapshot-thumb" class="snapshot-thumb">
+    <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
+  </div>
+
+  <video id="video" autoplay muted></video>
           <div class="camera-overlay">
             <button id="mic-btn" class="btn fab mic-btn" aria-label="Mic">🎙</button>
 <button id="snapshot-btn" class="btn fab" aria-label="Snapshot">📸</button>
