@@ -52,7 +52,6 @@ body {
 - padding: 12px;
 + padding: 16px;                /* 四周留白更舒服 */
   width: 100%;
-- height: 100%;
 + height: auto;                 /* 不再强行占满整列高度 */
 + aspect-ratio: 16 / 9;         /* 与 video 一致，卡片高度稳定 */
 + max-height: calc(100vh - 220px); /* (可选) 给个上限，避免特别矮屏时依然贴底 */
@@ -69,18 +68,13 @@ body {
 - object-fit: cover;
 + object-fit: contain;     /* 显示完整画面，不裁切 */
 + background: #FAFBFF;     /* 留白区域是柔和灰白，而不是黑色 */
-  border-radius: 20px;
+  border-radius: 16px;
 + aspect-ratio: 16 / 9;    /* （推荐）直接给 video 定比例，布局更稳 */
 }
 
 /* ================= OVERLAY BUTTONS ================= */
-.camera-overlay {
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
-  display: flex;
-  gap: 10px;
-}
+/* 若还存在，不使用绝对定位了（可删除整个 .camera-overlay 相关 HTML/CSS） */
+.camera-overlay { position: static; bottom: auto; left: auto; }
 
 .btn {
   min-height: 44px;
@@ -124,6 +118,17 @@ body {
   0%   { transform: translateX(-50%) scale(1);   opacity: .35; }
   50%  { transform: translateX(-50%) scale(1.8); opacity: .8;  }
   100% { transform: translateX(-50%) scale(1);   opacity: .35; }
+}
+/* 相机内框：与外卡片对齐的次级边框容器 */
+.camera-frame {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto; /* 上：视频自适应；下：按钮自然高度 */
+  gap: 12px;
+  width: 100%;
 }
 /* ================= RIGHT PANEL ================= */
 .right-panel {
@@ -389,3 +394,32 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   animation: fadeIn 0.2s ease;
 }
+
+/* 下半：按钮区（不覆盖视频），内置左右两侧 */
+.camera-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.camera-controls .controls-left,
+.camera-controls .controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 用于与上面通用按钮样式融合（你已有 .btn 样式） */
+.camera-controls .btn {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* 兼容原来的 mode 下拉样式 */
+.camera-controls .mode-wrapper { position: relative; }
