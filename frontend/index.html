@@ -29,35 +29,51 @@ style-src 'self' 'unsafe-inline';">
   <div class="main-layout">
       <!-- Camera Card -->
 <div class="camera-card card accent-border">
-<div class="camera-inner">
+  <div class="camera-inner">
 
-  <!-- 摄像区域错误提示 -->
-  <div id="inline-error" class="inline-error"></div>
+    <!-- 内框：上半是视频，下半是控制条 -->
+    <div class="camera-frame">
 
-  <!-- 视频右上角缩略图 -->
-  <div id="snapshot-thumb" class="snapshot-thumb">
-    <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
-  </div>
+      <!-- 上半：视频区域（可含右上角缩略图与错误提示） -->
+      <div class="camera-feed">
 
-  <video id="video" autoplay muted></video>
-          <div class="camera-overlay">
-            <button id="mic-btn" class="btn fab mic-btn" aria-label="Mic">🎙</button>
-<button id="snapshot-btn" class="btn fab" aria-label="Snapshot">📸</button>
-<button id="upload-btn" class="btn fab" aria-label="Upload">📄</button>
-            <div class="mode-wrapper">
-              <button id="mode-toggle" class="btn">⚙ Mode</button>
-              <div class="mode-dropdown" id="mode-dropdown">
-                <div data-mode="book">Book</div>
-                <div data-mode="form">Form</div>
-                <div data-mode="study">Study</div>
-                <div data-mode="write">Write</div>
-              </div>
+        <!-- 摄像区域错误提示 -->
+        <div id="inline-error" class="inline-error"></div>
+
+        <!-- 视频右上角缩略图 -->
+        <div id="snapshot-thumb" class="snapshot-thumb">
+          <img id="snapshot-img" src="" alt="Snapshot Thumbnail">
+        </div>
+
+        <video id="video" autoplay muted></video>
+      </div>
+
+      <!-- 下半：按钮区（不覆盖视频） -->
+      <div class="camera-controls">
+        <div class="controls-left">
+          <button id="mic-btn" class="btn mic-btn" aria-label="Mic">🎙 Mic</button>
+          <button id="snapshot-btn" class="btn" aria-label="Snapshot">📸 Snapshot</button>
+          <button id="upload-btn" class="btn" aria-label="Upload">📄 Upload</button>
+          <input type="file" id="file-input" style="display:none" multiple>
+        </div>
+
+        <div class="controls-right">
+          <div class="mode-wrapper">
+            <button id="mode-toggle" class="btn">⚙ Mode</button>
+            <div class="mode-dropdown" id="mode-dropdown">
+              <div data-mode="book">Book</div>
+              <div data-mode="form">Form</div>
+              <div data-mode="study">Study</div>
+              <div data-mode="write">Write</div>
             </div>
-            <input type="file" id="file-input" style="display:none" multiple>
           </div>
         </div>
       </div>
 
+    </div><!-- /.camera-frame -->
+
+  </div>
+</div>
       <!-- Right Panel -->
       <div class="right-panel">
         <!-- Text Display Area -->
