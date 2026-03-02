@@ -41,7 +41,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-+ align-self: start;   /* 关键：不再被 Grid 竖直拉伸到底部 */
+ align-self: start;   /* 关键：不再被 Grid 竖直拉伸到底部 */
 }
 .camera-inner {
   background:
@@ -49,27 +49,32 @@ body {
     linear-gradient(120deg, var(--g1), var(--g2)) border-box;
   border: 1px solid transparent;
   border-radius: var(--radius-lg);
-- padding: 12px;
-+ padding: 16px;                /* 四周留白更舒服 */
+ padding: 16px;                /* 四周留白更舒服 */
   width: 100%;
-+ height: auto;                 /* 不再强行占满整列高度 */
-+ aspect-ratio: 16 / 9;         /* 与 video 一致，卡片高度稳定 */
-+ max-height: calc(100vh - 220px); /* (可选) 给个上限，避免特别矮屏时依然贴底 */
+ height: auto;                 /* 不再强行占满整列高度 */
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   box-shadow: var(--shadow-1);
 }
+/* 上半：视频容器（相对定位，挂载缩略图/错误提示） */
+.camera-feed {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  overflow: hidden;           /* 让右上角缩略图圆角跟随 */
+  background: #FAFBFF;
+  aspect-ratio: 16 / 9;       /* ✅ 由这里来稳定高度比例 */
+}
 
 #video {
   width: 100%;
   height: 100%;
-- object-fit: cover;
-+ object-fit: contain;     /* 显示完整画面，不裁切 */
-+ background: #FAFBFF;     /* 留白区域是柔和灰白，而不是黑色 */
+ object-fit: contain;     /* 显示完整画面，不裁切 */
+ background: #FAFBFF;     /* 留白区域是柔和灰白，而不是黑色 */
   border-radius: 16px;
-+ aspect-ratio: 16 / 9;    /* （推荐）直接给 video 定比例，布局更稳 */
 }
 
 /* ================= OVERLAY BUTTONS ================= */
@@ -330,13 +335,17 @@ body {
   right: 10px;
   width: 230px;
   height: 170px;
-  border: 1px solid #ccc;
   overflow: hidden;
-  display: none;  /* 默认隐藏 */
-  z-index: 100;   /* 保证在视频上方 */
-  border-radius: 8px;
-}
+  display: none;
+  z-index: 100;
+  border-radius: 12px;
 
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(120deg, var(--g1), var(--g2)) border-box;
+  box-shadow: var(--shadow-1);
+}
 #snapshot-img {
   width: 100%;
   height: 100%;
