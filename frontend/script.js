@@ -34,8 +34,14 @@ function initSession() {
 
 async function initCamera() {
   try {
-    videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-    document.getElementById("video").srcObject = videoStream;
+videoStream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    facingMode: "user",     // 或 "environment"
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+    aspectRatio: 16/9
+  }
+});    document.getElementById("video").srcObject = videoStream;
   } catch (err) {
     console.error("Camera error:", err);
   }
