@@ -385,6 +385,5 @@ function showStatus(msg) {
   const status = document.getElementById("status");
   status.textContent = msg;
 }
-setInterval(highlightLoop, 800);
 renderMockText();
 
