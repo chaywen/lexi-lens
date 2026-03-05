@@ -2,7 +2,6 @@ const CONFIG = {
   WS_URL: "ws://localhost:8080/ws/session",
   API_URL: "http://localhost:8080"
 };
-const SESSION_TOKEN = crypto.randomUUID();
 const ALLOWED_TYPES = [
   'application/pdf',
   'image/png',
@@ -27,11 +26,19 @@ window.addEventListener("DOMContentLoaded", () => {
 }
 });
 
-function initSession() {
+let SESSION_TOKEN = null;
+
+async function initSession() {
+  const res = await fetch("http://localhost:8080/api/session", {
+    method: "POST"
+  });
+
+  const data = await res.json();
+  SESSION_TOKEN = data.session_token;
+
   initCamera();
   initWebSocket();
 }
-
 async function initCamera() {
   try {
 videoStream = await navigator.mediaDevices.getUserMedia({
@@ -345,9 +352,9 @@ function showInlineError(message) {
 function initWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
-  ws.onopen = () => {
-    addChat("WebSocket connected.", "ai");
-  };
+ws.onopen = () => {
+  sendMessage("audio", {});  // 只用于发送 token 认证
+};
 
   ws.onmessage = (event) => {
     const data = event.data;
