@@ -171,13 +171,18 @@ if (energy < 0.05) {
 
   } else {
 
-    btn.classList.remove("recording");
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(t => t.stop());
-    audioContext.close();
-    isRecording = false;
-    btn.style.transform = "scale(1)";
-  }
+  btn.classList.remove("recording");
+  btn.classList.remove("silent");          // ⭐ 加这个
+  btn.style.setProperty("--energy", 0);    // ⭐ 加这个
+
+  mediaRecorder.stop();
+  mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  audioContext.close();
+
+  isRecording = false;
+
+  btn.style.transform = "scale(1)";
+}
 }
 function testVoice() {
   const msg = "Hello, I am Lexi.";
