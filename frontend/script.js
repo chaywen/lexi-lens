@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
 let SESSION_TOKEN = null;
 
 async function initSession() {
-  const res = await fetch("http://localhost:8080/api/session", {
+  const res = await fetch(`${CONFIG.API_URL}/api/session`, {
     method: "POST"
   });
 
@@ -240,7 +240,7 @@ function handleUpload(event) {
 const formData = new FormData();
 formData.append("file", f);
 
-fetch("http://localhost:8080/api/upload", {
+fetch(`${CONFIG.API_URL}/api/upload`, {
   method: "POST",
   body: formData
 })
