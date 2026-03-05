@@ -320,19 +320,7 @@ function renderMockTextForMode(mode) {
   currentWord = 0;
   renderMockText();
 }
-function highlightLoop() {
-  const spans = document.querySelectorAll("#reading-text span");
 
-  if (spans.length === 0) return;   // ✅ 先检查
-
-  spans.forEach(s => s.classList.remove("active-word"));
-
-  if (spans[currentWord]) {
-    spans[currentWord].classList.add("active-word");
-  }
-
-  currentWord = (currentWord + 1) % spans.length;
-}
 function highlightWord(index) {
   const spans = document.querySelectorAll("#reading-text span");
   spans.forEach(s => s.classList.remove("active-word"));
@@ -376,14 +364,12 @@ ws.onerror = () => {
   showStatus("Connection error. Please retry.");
 };
   ws.onclose = () => {
-    console.log("WebSocket closed, retrying in 2s...");
     addChat("WebSocket disconnected. Reconnecting...", "ai");
     setTimeout(initWebSocket, 2000); // 2 秒后重连
   };
 }
 function showStatus(msg) {
-  const status = document.getElementById("status");
-  status.textContent = msg;
+  addChat(msg, "ai");
 }
 renderMockText();
 
