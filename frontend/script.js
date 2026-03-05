@@ -174,6 +174,11 @@ if (energy < 0.05) {
     updateMicAnimation();   // ⭐⭐⭐ 关键：启动动画循环
 
     mediaRecorder.start(500);
+    mediaRecorder.ondataavailable = (event) => {
+  if (event.data.size > 0 && ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(event.data); // 🔥 直接发送 binary
+  }
+};
     addChat("Listening...", "user");
 
   } else {
@@ -191,11 +196,7 @@ if (energy < 0.05) {
   btn.style.transform = "scale(1)";
 }
 }
-function testVoice() {
-  const msg = "Hello, I am Lexi.";
-  speak(msg);
-  addChat(msg, "ai");
-}
+
 function takeSnapshot() {
   const video = document.getElementById("video");
   const canvas = document.createElement("canvas");
@@ -236,27 +237,19 @@ function handleUpload(event) {
 
     addChat(`Uploaded: ${f.name}`, "user");
 
-    // 以后这里再加 fetch 上传
-  }
+const formData = new FormData();
+formData.append("file", f);
+
+fetch("http://localhost:8080/api/upload", {
+  method: "POST",
+  body: formData
+})
+.then(res => res.json())
+.then(data => {
+  addChat("File processed.", "ai");
+});  }
 }
 
-function playMock() {
-  const msg = "Hello. I am Lexi. I will read this text for you.";
-  speak(msg);
-  addChat(msg, "ai");
-}
-
-function speak(text) {
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9;
-  u.pitch = 1;
-  speechSynthesis.speak(u);
-}
-
-function stopSpeech() {
-  speechSynthesis.cancel();
-}
 
 function explainSimply() {
   const msg = "Here is a simpler explanation of the text.";
@@ -353,19 +346,31 @@ function initWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
 ws.onopen = () => {
-  sendMessage("audio", {});  // 只用于发送 token 认证
+  if (SESSION_TOKEN) {
+    sendMessage("audio", {});
+  }
 };
 
-  ws.onmessage = (event) => {
-    const data = event.data;
-    try {
-      const parsed = JSON.parse(data);
-      if (parsed.type === "text") addChat(parsed.message, "ai");
-      if (parsed.type === "highlight") highlightWord(parsed.word_index);
-      if (parsed.type === "mode") renderMockTextForMode(parsed.mode);
-    } catch {
-    }
-  };
+ws.onmessage = async (event) => {
+
+  // 🔥 如果是 binary（音频）
+  if (event.data instanceof Blob) {
+    const arrayBuffer = await event.data.arrayBuffer();
+    playAudioChunk(arrayBuffer);
+    return;
+  }
+
+  // 否则当 JSON
+  try {
+    const parsed = JSON.parse(event.data);
+
+    if (parsed.type === "text") addChat(parsed.message, "ai");
+    if (parsed.type === "highlight") highlightWord(parsed.word_index);
+    if (parsed.type === "mode") renderMockTextForMode(parsed.mode);
+
+  } catch {
+  }
+};
 
 ws.onerror = () => {
   showStatus("Connection error. Please retry.");
@@ -377,6 +382,15 @@ ws.onerror = () => {
 }
 function showStatus(msg) {
   addChat(msg, "ai");
+}
+let playbackContext = new AudioContext();
+
+async function playAudioChunk(arrayBuffer) {
+  const audioBuffer = await playbackContext.decodeAudioData(arrayBuffer);
+  const source = playbackContext.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(playbackContext.destination);
+  source.start();
 }
 renderMockText();
 
