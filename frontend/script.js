@@ -207,9 +207,14 @@ function takeSnapshot() {
 
     // 2️⃣ 发送给后端（可选，后续阶段）
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(blob);
-    }
-  }, "image/jpeg");
+      const reader = new FileReader();
+  reader.onloadend = () => {
+    sendMessage("snapshot", {
+      frame: reader.result   // base64
+    });
+  };
+  reader.readAsDataURL(blob);
+}, "image/jpeg");
 
   addChat("Snapshot sent.", "user");
 }
@@ -353,7 +358,6 @@ function initWebSocket() {
   ws = new WebSocket(CONFIG.WS_URL);
 
   ws.onopen = () => {
-    console.log("WebSocket connected");
     addChat("WebSocket connected.", "ai");
   };
 
@@ -362,22 +366,25 @@ function initWebSocket() {
     try {
       const parsed = JSON.parse(data);
       if (parsed.type === "text") addChat(parsed.message, "ai");
-      if (parsed.type === "highlight") highlightWord(parsed.index);
+      if (parsed.type === "highlight") highlightWord(parsed.word_index);
       if (parsed.type === "mode") renderMockTextForMode(parsed.mode);
     } catch {
-      console.log("Non-JSON message:", data);
     }
   };
 
-  ws.onerror = (err) => {
-    console.error("WebSocket error:", err);
-  };
-
+ws.onerror = () => {
+  showStatus("Connection error. Please retry.");
+};
   ws.onclose = () => {
     console.log("WebSocket closed, retrying in 2s...");
     addChat("WebSocket disconnected. Reconnecting...", "ai");
     setTimeout(initWebSocket, 2000); // 2 秒后重连
   };
 }
+function showStatus(msg) {
+  const status = document.getElementById("status");
+  status.textContent = msg;
+}
 setInterval(highlightLoop, 800);
 renderMockText();
+
