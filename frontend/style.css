@@ -122,15 +122,13 @@ body {
   transition: all .08s linear;
 }
 .mic-btn.recording {
-  background: #F1FCF3;
-  border-color: #D9F7E1;
+  background: #F6FFFA;
+  border-color: #BBF7D0;
   color: #065f46;
   box-shadow:
-    0 0 0 6px rgba(16,185,129,0.12),
-    0 0 18px rgba(16,185,129,0.25),
+    0 0 0 3px rgba(16,185,129,0.08),
     var(--shadow-1);
 }
-
 .mic-btn.recording::before {
   height: calc(2px + (var(--energy, 0) * 16px));
   opacity: 0.9;
