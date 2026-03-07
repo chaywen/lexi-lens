@@ -1,6 +1,6 @@
 const CONFIG = {
-  WS_URL: "ws://localhost:8080/ws/session",
-  API_URL: "http://localhost:8080"
+  WS_URL: "ws://127.0.0.1:8080/ws/session",
+  API_URL: "http://127.0.0.1:8080"
 };
 const ALLOWED_TYPES = [
   'application/pdf',
