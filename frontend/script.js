@@ -1,6 +1,6 @@
 // ================= CONFIG =================
 const CONFIG = {
-  WS_URL: "ws://127.0.0.1:8080/ws/session",
+  WS_URL: "ws://127.0.0.1:8080/ws/session",  // 本地测试
   API_URL: "http://127.0.0.1:8080"
 };
 const ALLOWED_TYPES = ['application/pdf','image/png','image/jpeg','image/webp'];
@@ -20,7 +20,6 @@ let currentWord = 0;
 // ================= INIT =================
 window.addEventListener("DOMContentLoaded", () => {
   setupEvents();
-
   if (!sessionStorage.getItem("privacy_consented")) {
     document.getElementById("privacy-modal").classList.add("show");
   } else {
@@ -145,7 +144,15 @@ function handleUpload(event){
     addChat(`Uploaded: ${f.name}`,"user");
     const formData=new FormData(); formData.append("file",f);
     fetch(`${CONFIG.API_URL}/api/upload`,{method:"POST",body:formData})
-    .then(r=>r.json()).then(d=>addChat("File processed.","ai"));
+    .then(r=>r.json())
+    .then(d=>{
+      addChat("File processed.","ai");
+      if(d.words && Array.isArray(d.words)) {
+        mockWords = d.words.map(w=>w.word);
+        currentWord=0;
+        renderMockText();
+      }
+    });
   }
 }
 function validateFile(file){
@@ -237,7 +244,7 @@ function setupEvents(){
   document.getElementById("mode-dropdown").addEventListener("click",(e)=>{
     const mode=e.target.dataset.mode; if(!mode)return;
     document.getElementById("mode-dropdown").style.display="none";
-    renderMockTextForMode(mode); // ✅ 前端立即更新文本
+    renderMockTextForMode(mode);
     if(ws && ws.readyState===WebSocket.OPEN) sendMessage("mode",{mode});
   });
   document.getElementById("consent-btn")?.addEventListener("click",()=>{
