@@ -260,3 +260,68 @@ function setupEvents(){
 }
 
 renderMockText();
+
+// ================= MOCK TEST SCRIPT =================
+// 用于检测前端 JS 是否能正确显示 PDF 文本、word highlight 和 mode 切换
+// 不依赖后端实际返回
+
+async function runFrontendTest() {
+  console.log("=== Running Frontend Test ===");
+
+  // 1️⃣ 模拟 PDF 上传返回
+  const mockPdfResponse = {
+    full_text: "This is a test PDF for highlighting.",
+    words: [
+      {word:"This", index:0, page:1},
+      {word:"is", index:1, page:1},
+      {word:"a", index:2, page:1},
+      {word:"test", index:3, page:1},
+      {word:"PDF", index:4, page:1},
+      {word:"for", index:5, page:1},
+      {word:"highlighting.", index:6, page:1},
+    ]
+  };
+
+  console.log("Simulating PDF upload...");
+  mockWords = mockPdfResponse.words.map(w => w.word);
+  currentWord = 0;
+  renderMockText();
+  addChat("PDF processed (mock).", "ai");
+
+  // 2️⃣ 模拟 Word Highlight
+  console.log("Simulating word highlighting...");
+  let i = 0;
+  const highlightInterval = setInterval(() => {
+    highlightWord(i);
+    i++;
+    if(i >= mockWords.length) clearInterval(highlightInterval);
+  }, 600); // 每 0.6 秒高亮下一个单词
+
+  // 3️⃣ 模拟 Mode 切换
+  const modes = ["book", "form", "study", "write"];
+  console.log("Simulating mode changes...");
+  let modeIndex = 0;
+  const modeInterval = setInterval(() => {
+    const mode = modes[modeIndex];
+    renderMockTextForMode(mode);
+    addChat(`Mode switched to ${mode} (mock)`, "ai");
+    modeIndex++;
+    if(modeIndex >= modes.length) clearInterval(modeInterval);
+  }, 2000); // 每 2 秒切换一次模式
+
+  // 4️⃣ 模拟 Mic 实时字幕（mock）
+  console.log("Simulating Mic real-time transcription...");
+  let transcriptionIndex = 0;
+  const micWords = ["Lexi","reads","your","text","in","real","time"];
+  const micInterval = setInterval(() => {
+    if(transcriptionIndex >= micWords.length){ clearInterval(micInterval); return; }
+    addChat(micWords[transcriptionIndex], "ai");
+    transcriptionIndex++;
+  }, 500); // 每 0.5 秒输出一个词
+}
+
+// 自动运行测试
+window.addEventListener("DOMContentLoaded", () => {
+  // 延迟 1 秒，保证 DOM 渲染完成
+  setTimeout(runFrontendTest, 1000);
+});
