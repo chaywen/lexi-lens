@@ -14,6 +14,7 @@ let ws = null;
 let SESSION_TOKEN = null;
 let audioContext, analyser, dataArray;
 let playbackContext = new AudioContext();
+let mockWords = ["This","is","a","mock","text","for","highlighting","test"];
 let currentWord = 0;
 
 // ================= INIT =================
@@ -47,7 +48,9 @@ async function initCamera() {
     videoStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "user", width: {ideal:1280}, height:{ideal:720}, aspectRatio:16/9 }
     });
-    document.getElementById("video").srcObject = videoStream;
+    const videoEl = document.getElementById("video");
+    videoEl.srcObject = videoStream;
+    videoEl.play();
   } catch (err) {
     console.error("Camera error:", err);
     showInlineError("Cannot access camera.");
@@ -56,6 +59,8 @@ async function initCamera() {
 
 function takeSnapshot() {
   const video = document.getElementById("video");
+  if(!videoStream) return showInlineError("No video stream");
+  
   const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -156,24 +161,26 @@ function addChat(text,sender){
   chatArea.appendChild(div); chatArea.scrollTop=chatArea.scrollHeight;
 }
 
-// ================= READING TEXT WITH SPANS =================
-function displayTextWithSpans(text, wordsArray){
-  const container = document.getElementById("reading-text");
-  container.innerHTML = "";
-  wordsArray.forEach((w,i)=>{
-      const span = document.createElement("span");
-      span.textContent = w + " ";
-      span.dataset.index = i;
-      container.appendChild(span);
-  });
+// ================= FONT CONTROL =================
+function increaseFont(){ const el=document.getElementById("reading-text"); let size=parseFloat(window.getComputedStyle(el).fontSize); el.style.fontSize=size+2+"px"; }
+function decreaseFont(){ const el=document.getElementById("reading-text"); let size=parseFloat(window.getComputedStyle(el).fontSize); if(size>16) el.style.fontSize=size-2+"px"; }
+
+// ================= MOCK / MODE =================
+function renderMockText(){
+  const container=document.getElementById("reading-text"); container.innerHTML="";
+  mockWords.forEach((w,i)=>{ const span=document.createElement("span"); span.textContent=w+" "; span.dataset.index=i; container.appendChild(span); });
+}
+function renderMockTextForMode(mode){
+  let words=[];
+  if(mode=="book") words=["This","is","book","mode","reading","example"];
+  if(mode=="form") words=["Please","fill","out","this","form","carefully"];
+  if(mode=="study") words=["Study","mode","helps","you","learn","faster"];
+  if(mode=="write") words=["Write","mode","assists","your","creativity"];
+  mockWords=words; currentWord=0; renderMockText();
 }
 function highlightWord(index){
-  const spans=document.querySelectorAll("#reading-text span"); 
-  spans.forEach(s=>s.classList.remove("active-word"));
-  if(spans[index]){
-    spans[index].classList.add("active-word");
-    spans[index].scrollIntoView({behavior:"smooth",block:"center"});
-  }
+  const spans=document.querySelectorAll("#reading-text span"); spans.forEach(s=>s.classList.remove("active-word"));
+  if(spans[index]){ spans[index].classList.add("active-word"); spans[index].scrollIntoView({behavior:"smooth",block:"center"}); }
 }
 
 // ================= INLINE ERROR =================
@@ -181,44 +188,42 @@ function showInlineError(msg){ const el=document.getElementById("inline-error");
 
 // ================= WEBSOCKET =================
 function initWebSocket(){
-  ws = new WebSocket(CONFIG.WS_URL);
-  ws.onopen = () => {
-    if(SESSION_TOKEN) sendMessage("audio", { session_token: SESSION_TOKEN });
-  };
-
-  ws.onmessage = async(event) => {
+  ws=new WebSocket(CONFIG.WS_URL);
+  ws.onopen=()=>{ if(SESSION_TOKEN) sendMessage("audio",{}); addChat("WebSocket connected.","ai"); };
+  ws.onmessage=async(event)=>{
     if(event.data instanceof Blob){
-      const arrayBuffer = await event.data.arrayBuffer(); 
-      playAudioChunk(arrayBuffer); 
-      return;
+      const arrayBuffer=await event.data.arrayBuffer(); playAudioChunk(arrayBuffer); return;
     }
     try{
-      const parsed = JSON.parse(event.data);
-
-      if(parsed.type=="text"){
-        addChat(parsed.message,"ai");
-        if(parsed.words) displayTextWithSpans(parsed.message, parsed.words);
-      }
+      const parsed=JSON.parse(event.data);
+      if(parsed.type=="text") addChat(parsed.message,"ai");
       if(parsed.type=="highlight") highlightWord(parsed.word_index);
-      if(parsed.type=="mode") displayTextWithSpans("",parsed.words || []);
-    }catch(e){ console.error("WS message parse error:",e); }
+      if(parsed.type=="mode") renderMockTextForMode(parsed.mode);
+    }catch(err){ console.error(err); };
   };
-
-  ws.onerror = () => showStatus("Connection error. Please retry.");
-  ws.onclose = () => { addChat("WebSocket disconnected. Reconnecting...","ai"); setTimeout(initWebSocket,2000); };
+  ws.onerror=()=>showStatus("Connection error. Please retry.");
+  ws.onclose=()=>{ addChat("WebSocket disconnected. Reconnecting...","ai"); setTimeout(initWebSocket,2000); };
 }
 function sendMessage(type,payload={}){ if(!ws||ws.readyState!==WebSocket.OPEN)return; ws.send(JSON.stringify({ type, session_token:SESSION_TOKEN, ...payload })); }
 function showStatus(msg){ addChat(msg,"ai"); }
 async function playAudioChunk(buffer){
-  const audioBuffer = await playbackContext.decodeAudioData(buffer);
-  const source = playbackContext.createBufferSource(); source.buffer = audioBuffer; source.connect(playbackContext.destination); source.start();
+  const audioBuffer=await playbackContext.decodeAudioData(buffer);
+  const source=playbackContext.createBufferSource(); source.buffer=audioBuffer; source.connect(playbackContext.destination); source.start();
 }
 
 // ================= CONTROL BUTTONS =================
 function explainSimply(){ const msg="Here is a simpler explanation of the text."; speak(msg); addChat(msg,"ai"); }
 function testVoice(){ const msg="This is a test voice playback."; speak(msg); addChat(msg,"ai"); }
-function stopSpeech(){ playbackContext.close(); playbackContext=new AudioContext(); addChat("Stopped audio.","user"); }
-function speak(text){ const utter=new SpeechSynthesisUtterance(text); speechSynthesis.speak(utter); }
+function stopSpeech(){
+  playbackContext.close();
+  playbackContext=new AudioContext();
+  speechSynthesis.cancel();  // ✅ 停止浏览器 TTS
+  addChat("Stopped audio.","user");
+}
+function speak(text){
+  const utter=new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utter);
+}
 
 // ================= EVENT BINDINGS =================
 function setupEvents(){
@@ -227,11 +232,12 @@ function setupEvents(){
   document.getElementById("upload-btn").addEventListener("click",()=>document.getElementById("file-input").click());
   document.getElementById("file-input").addEventListener("change",handleUpload);
   document.getElementById("mode-toggle").addEventListener("click",()=>{ 
-    const menu=document.getElementById("mode-dropdown"); menu.style.display=(menu.style.display=="flex"?"none":"flex"); 
+    const menu=document.getElementById("mode-dropdown"); menu.style.display=(menu.style.display=="flex"?"none":"flex");
   });
   document.getElementById("mode-dropdown").addEventListener("click",(e)=>{
     const mode=e.target.dataset.mode; if(!mode)return;
     document.getElementById("mode-dropdown").style.display="none";
+    renderMockTextForMode(mode); // ✅ 前端立即更新文本
     if(ws && ws.readyState===WebSocket.OPEN) sendMessage("mode",{mode});
   });
   document.getElementById("consent-btn")?.addEventListener("click",()=>{
@@ -242,10 +248,8 @@ function setupEvents(){
   document.getElementById("test-voice-btn")?.addEventListener("click",testVoice);
   document.getElementById("stop-btn")?.addEventListener("click",stopSpeech);
   document.getElementById("explain-btn")?.addEventListener("click",explainSimply);
-  document.getElementById("font-increase")?.addEventListener("click",()=>{ 
-    const el=document.getElementById("reading-text"); let size=parseFloat(window.getComputedStyle(el).fontSize); el.style.fontSize=size+2+"px"; 
-  });
-  document.getElementById("font-decrease")?.addEventListener("click",()=>{ 
-    const el=document.getElementById("reading-text"); let size=parseFloat(window.getComputedStyle(el).fontSize); if(size>16) el.style.fontSize=size-2+"px"; 
-  });
+  document.getElementById("font-increase")?.addEventListener("click",increaseFont);
+  document.getElementById("font-decrease")?.addEventListener("click",decreaseFont);
 }
+
+renderMockText();
